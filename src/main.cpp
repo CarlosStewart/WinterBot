@@ -92,7 +92,29 @@ void intkControl(void *) {
   }
 }
 
-void trayControl(void *){}
+void trayControl(void *) {
+  ControllerButton btn_tray_up(BTN_TRAY_UP);
+  ControllerButton btn_tray_down(BTN_TRAY_DOWN);
+
+  while (true) {
+    if (btn_tray_up.changedToPressed()) {
+      tray.setTarget(heights_tray::vertical);
+      tray.setState(state_tray::moveToTarget);
+    } else if (btn_tray_down.changedToPressed()) {
+      tray.setTarget(tray.getRestHeight());
+      tray.setState(state_tray::moveToTarget);
+    }
+
+    switch (tray.getState()) {
+    case state_tray::hold:
+      if (tray.getLastState() != state_tray::hold) {
+      }
+    case state_tray::moveToTarget:
+    case state_tray::brake:
+    case state_tray::rest:
+    }
+  }
+}
 /**
  * Runs the user autonomous code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via

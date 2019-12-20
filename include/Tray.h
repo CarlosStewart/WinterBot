@@ -3,7 +3,7 @@
 #include "main.h"
 class Tray {
   state_tray state;
-  heights_tray targetHeight;
+  state_tray lastState;
   double restHeight;
 
 public:
@@ -21,12 +21,18 @@ public:
   void setTarget(heights_tray tHeight);
   void setTarget(double tHeight);
 
+  // returns the restHeight
+  double getRestHeight();
+
   // state Control
   // sets the state
   void setState(state_tray tState);
+  // sets the lastState
+  void setLastState(state_tray tState);
   // returns the state
   state_tray getState();
-
+  // returns the lastState
+  state_tray getLastState();
 };
 extern Tray tray;
 #endif
