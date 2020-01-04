@@ -28,32 +28,6 @@ void disabled() {}
  */
 void competition_initialize() {}
 
-void dvtnControl(void *) {
-  ControllerButton btn_dt_tgl_slew(BTN_DVTN_TGL_SLEW);
-
-  while (true) {
-    if (btn_dt_tgl_slew.changedToPressed()) {
-      if (dvtn.getState() == state_dvtn::plain)
-        dvtn.setState(state_dvtn::slew);
-      else if (dvtn.getState() == state_dvtn::slew)
-        dvtn.setState(state_dvtn::plain);
-    }
-
-    switch (dvtn.getState()) {
-    case state_dvtn::plain:
-      dvtn.updateArcade(con.getAnalog(ControllerAnalog::leftY),
-                        con.getAnalog(ControllerAnalog::rightX), false);
-      break;
-    case state_dvtn::slew:
-      dvtn.updateArcade(con.getAnalog(ControllerAnalog::leftY),
-                        con.getAnalog(ControllerAnalog::rightX), true);
-      break;
-    case state_dvtn::off:
-      dvtn.ctrl.stop();
-    }
-  }
-}
-
 void intkControl(void *) {
   ControllerButton btn_intk_tgl(BTN_INTK_TGL);
   ControllerButton btn_intk_in(BTN_INTK_IN);
@@ -70,6 +44,9 @@ void intkControl(void *) {
       intk.setState(state_intk::in);
     } else if (btn_intk_out.changedToPressed()) {
       intk.setState(state_intk::out);
+    } else if (btn_intk_in.changedToReleased() ||
+               btn_intk_out.changedToReleased()) {
+      intk.setState(state_intk::hold);
     }
 
     switch (intk.getState()) {
@@ -89,6 +66,7 @@ void intkControl(void *) {
       intk.stop(false);
       break;
     }
+    pros::delay(20);
   }
 }
 
@@ -101,18 +79,88 @@ void trayControl(void *) {
       tray.setTarget(heights_tray::vertical);
       tray.setState(state_tray::moveToTarget);
     } else if (btn_tray_down.changedToPressed()) {
-      tray.setTarget(tray.getRestHeight());
+      tray.setTarget(heights_tray::bottom);
       tray.setState(state_tray::moveToTarget);
+    } else if (btn_tray_up.changedToReleased() ||
+               btn_tray_down.changedToReleased()) {
+      tray.setState(state_tray::brake);
     }
 
     switch (tray.getState()) {
     case state_tray::hold:
-      if (tray.getLastState() != state_tray::hold) {
-      }
+      tray.disable();
+      tray.setState(state_tray::idle);
+      break;
     case state_tray::moveToTarget:
+      tray.enable();
+      tray.setState(state_tray::idle);
+      break;
     case state_tray::brake:
+      tray.disable();
+      tray.brake();
+      tray.setState(state_tray::idle);
+      break;
     case state_tray::rest:
+      tray.rest();
+      tray.setState(state_tray::idle);
+      break;
+    case state_tray::idle:
+      pros::delay(10);
     }
+
+    pros::delay(20);
+  }
+}
+
+void liftControl(void *) {
+  ControllerButton btn_lift_up(BTN_LIFT_UP);
+  ControllerButton btn_lift_down(BTN_LIFT_DOWN);
+  ControllerButton btn_lift_tower_low(BTN_LIFT_TOWER_LOW);
+  ControllerButton btn_lift_tower_mid(BTN_LIFT_TOWER_MID);
+
+  while (true) {
+    if (btn_lift_up.changedToPressed()) {
+      lift.setTarget(heights_lift::top);
+      lift.setState(state_lift::moveToTarget);
+    } else if (btn_lift_down.changedToPressed()) {
+      lift.setTarget(heights_lift::bottom);
+      lift.setState(state_lift::moveToTarget);
+    } else if (btn_lift_tower_low.changedToPressed()) {
+      lift.setTarget(heights_lift::lowTower);
+      lift.setState(state_lift::moveToTarget);
+    } else if (btn_lift_tower_mid.changedToPressed()) {
+      lift.setTarget(heights_lift::midTower);
+      lift.setState(state_lift::moveToTarget);
+    } else if (btn_lift_up.changedToReleased() ||
+               btn_lift_down.changedToReleased() ||
+               btn_lift_tower_low.changedToReleased() ||
+               btn_lift_tower_mid.changedToReleased()) {
+      lift.setState(state_lift::brake);
+    }
+
+    switch (lift.getState()) {
+    case state_lift::hold:
+      lift.disable();
+      lift.setState(state_lift::idle);
+      break;
+    case state_lift::moveToTarget:
+      lift.enable();
+      lift.setState(state_lift::idle);
+      break;
+    case state_lift::brake:
+      lift.disable();
+      lift.brake();
+      lift.setState(state_lift::idle);
+      break;
+    case state_lift::rest:
+      lift.rest();
+      lift.setState(state_lift::idle);
+      break;
+    case state_lift::idle:
+      pros::delay(10);
+      break;
+    }
+    pros::delay(20);
   }
 }
 /**
@@ -142,9 +190,33 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-  pros::Task dvtnTask(dvtnControl);
   pros::Task intkTask(intkControl);
+  pros::Task trayTask(trayControl);
+  pros::Task liftTask(liftControl);
+
+  ControllerButton btn_dt_tgl_slew(BTN_DVTN_TGL_SLEW);
+
   while (true) {
+    if (btn_dt_tgl_slew.changedToPressed()) {
+      if (dvtn.getState() == state_dvtn::plain)
+        dvtn.setState(state_dvtn::slew);
+      else if (dvtn.getState() == state_dvtn::slew)
+        dvtn.setState(state_dvtn::plain);
+    }
+
+    switch (dvtn.getState()) {
+    case state_dvtn::plain:
+      dvtn.updateArcade(con.getAnalog(ControllerAnalog::leftY),
+                        con.getAnalog(ControllerAnalog::rightX), false);
+      break;
+    case state_dvtn::slew:
+      dvtn.updateArcade(con.getAnalog(ControllerAnalog::leftY),
+                        con.getAnalog(ControllerAnalog::rightX), true);
+      break;
+    case state_dvtn::off:
+      dvtn.ctrl.stop();
+    }
+
     pros::delay(20);
   }
 }

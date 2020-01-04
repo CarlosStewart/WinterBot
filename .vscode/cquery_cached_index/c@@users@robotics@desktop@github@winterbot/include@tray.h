@@ -4,7 +4,7 @@
 class Tray {
   state_tray state;
   state_tray lastState;
-  double restHeight;
+  const double brakeVelRange = 20.0;
 
 public:
   // "default" constructor
@@ -15,24 +15,19 @@ public:
   // disables the controller
   void disable();
 
-  // moves the tray to the lowest availible position
-  void goToRest();
-  // sets the targetHeight
+  // turns off the controller, and sets the brakeMode to coast
+  void rest();
+  // sets the target height of the controller
   void setTarget(heights_tray tHeight);
   void setTarget(double tHeight);
-
-  // returns the restHeight
-  double getRestHeight();
+  // makes the tray stop as soon as possible without jerking
+  void brake();
 
   // state Control
   // sets the state
   void setState(state_tray tState);
-  // sets the lastState
-  void setLastState(state_tray tState);
   // returns the state
   state_tray getState();
-  // returns the lastState
-  state_tray getLastState();
 };
 extern Tray tray;
 #endif

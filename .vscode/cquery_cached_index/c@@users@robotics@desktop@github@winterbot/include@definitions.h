@@ -4,10 +4,10 @@
 // functions
 
 // motors
-const int DLF = 11;
-const int DRF = -13;
-const int DRB = -17;
-const int DLB = 16;
+const int DLF = 1;
+const int DRF = -4;
+const int DRB = -3;
+const int DLB = 2;
 extern Motor dvtn_left_front_motor;
 extern Motor dvtn_left_back_motor;
 extern Motor dvtn_right_front_motor;
@@ -15,11 +15,11 @@ extern Motor dvtn_right_back_motor;
 extern MotorGroup dvtn_left_motors;
 extern MotorGroup dvtn_right_motors;
 
-const int IL = 1;
-const int IR = -2;
+const int IL = 11;
+const int IR = -15;
 extern MotorGroup intk_motors;
 
-const int TRAY = -14;
+const int TRAY = -5;
 extern Motor tray_motor;
 
 const int LIFT = 10;
@@ -52,10 +52,9 @@ extern Potentiometer tray_pot;
 #define BTN_TRAY_UP ControllerDigital::L1
 #define BTN_TRAY_DOWN ControllerDigital::L2
 
-#define BTN_LIFT_UP ControllerDigital::R1
-#define BTN_LIFT_DOWN ControllerDigital::R2
-#define BTN_LIFT_LOW ControllerDigital::left
-#define BTN_LIFT_MED ControllerDigital::up
-#define BTN_LIFT_HIGH ControllerDigital::B
+#define BTN_LIFT_UP ControllerDigital::A
+#define BTN_LIFT_DOWN ControllerDigital::B
+#define BTN_LIFT_TOWER_LOW ControllerDigital::left
+#define BTN_LIFT_TOWER_MID ControllerDigital::up
 
 #define BTN_MCRO_STAK ControllerDigital::right
