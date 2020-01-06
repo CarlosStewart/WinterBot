@@ -1,7 +1,8 @@
 #include "main.h"
 
 Motor lift_motor(LIFT);
-auto controllerLift = AsyncControllerFactory::posPID(lift_motor, 0.1, 0.0, 0.0);
+auto controllerLift =
+    AsyncControllerFactory::posPID(lift_motor, 0.01, 0.0, 0.0);
 
 // overload constructor
 Lift::Lift(bool tBrakeModeHold) {
@@ -11,9 +12,16 @@ Lift::Lift(bool tBrakeModeHold) {
     lift_motor.setBrakeMode(AbstractMotor::brakeMode::coast);
 }
 // enables the controller
-void Lift::enable() { controllerLift.flipDisable(true); }
+void Lift::enable() { controllerLift.flipDisable(false); }
 // disables the controller
-void Lift::disable() { controllerLift.flipDisable(false); }
+void Lift::disable() { controllerLift.flipDisable(true); }
+// returns wheather or not it is disabled
+int Lift::isDisabled() {
+  if (controllerLift.isDisabled())
+    return 1;
+  else
+    return 0;
+}
 
 // turns off the controller, and sets the brakeMode to coast
 void Lift::rest() {

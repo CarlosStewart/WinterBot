@@ -13,6 +13,8 @@ public:
   void enable();
   // disables the controller
   void disable();
+  // returns wheather or not it is disabled
+  int isDisabled();
 
   // turns off the controller, and sets the brakeMode to coast
   void rest();

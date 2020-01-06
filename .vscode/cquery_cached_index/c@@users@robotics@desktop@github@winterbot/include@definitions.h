@@ -43,7 +43,7 @@ const char PT = 'A';
 extern Potentiometer tray_pot;
 
 // buttons
-#define BTN_DVTN_TGL_SLEW ControllerDigital::down
+#define BTN_DVTN_TGL_SLEW ControllerDigital::right
 
 #define BTN_INTK_TGL ControllerDigital::Y
 #define BTN_INTK_IN ControllerDigital::R1
@@ -52,9 +52,9 @@ extern Potentiometer tray_pot;
 #define BTN_TRAY_UP ControllerDigital::L1
 #define BTN_TRAY_DOWN ControllerDigital::L2
 
-#define BTN_LIFT_UP ControllerDigital::A
-#define BTN_LIFT_DOWN ControllerDigital::B
-#define BTN_LIFT_TOWER_LOW ControllerDigital::left
-#define BTN_LIFT_TOWER_MID ControllerDigital::up
+#define BTN_LIFT_UP ControllerDigital::X
+#define BTN_LIFT_DOWN ControllerDigital::A
+#define BTN_LIFT_TOWER_LOW ControllerDigital::down
+#define BTN_LIFT_TOWER_MID ControllerDigital::left
 
-#define BTN_MCRO_STAK ControllerDigital::right
+#define BTN_MCRO_STAK ControllerDigital::up

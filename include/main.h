@@ -63,7 +63,7 @@ enum class state_lift { hold, moveToTarget, brake, rest, idle };
 
 // heights
 enum class heights_lift {
-  bottom = 145,
+  bottom = 0,
   lowTower = 840,
   midTower = 3250,
   top = 3540

@@ -3,7 +3,7 @@
 Motor tray_motor(TRAY);
 Potentiometer tray_pot(PT);
 auto controllerTray =
-    AsyncControllerFactory::posPID(tray_motor, tray_pot, 0.1, 0.0, 0.0);
+    AsyncControllerFactory::posPID(tray_motor, tray_pot, 0.01, 0.0, 0.0);
 
 // default constructor
 Tray::Tray(bool isThisDumb) {
@@ -11,9 +11,9 @@ Tray::Tray(bool isThisDumb) {
 }
 
 // enables the controller
-void Tray::enable() { controllerTray.flipDisable(true); }
+void Tray::enable() { controllerTray.flipDisable(false); }
 // disables the controller
-void Tray::disable() { controllerTray.flipDisable(false); }
+void Tray::disable() { controllerTray.flipDisable(true); }
 
 // moves the tray to the lowest availible position
 void Tray::rest() {

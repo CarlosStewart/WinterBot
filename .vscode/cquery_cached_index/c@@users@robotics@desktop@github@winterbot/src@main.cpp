@@ -32,6 +32,7 @@ void intkControl(void *) {
   ControllerButton btn_intk_tgl(BTN_INTK_TGL);
   ControllerButton btn_intk_in(BTN_INTK_IN);
   ControllerButton btn_intk_out(BTN_INTK_OUT);
+  intk.setState(state_intk::hold);
 
   while (true) {
     if (btn_intk_tgl.changedToPressed()) {
@@ -73,6 +74,7 @@ void intkControl(void *) {
 void trayControl(void *) {
   ControllerButton btn_tray_up(BTN_TRAY_UP);
   ControllerButton btn_tray_down(BTN_TRAY_DOWN);
+  tray.setState(state_tray::rest);
 
   while (true) {
     if (btn_tray_up.changedToPressed()) {
@@ -117,6 +119,7 @@ void liftControl(void *) {
   ControllerButton btn_lift_down(BTN_LIFT_DOWN);
   ControllerButton btn_lift_tower_low(BTN_LIFT_TOWER_LOW);
   ControllerButton btn_lift_tower_mid(BTN_LIFT_TOWER_MID);
+  lift.setState(state_lift::hold);
 
   while (true) {
     if (btn_lift_up.changedToPressed()) {
@@ -142,22 +145,29 @@ void liftControl(void *) {
     case state_lift::hold:
       lift.disable();
       lift.setState(state_lift::idle);
+      printf("in state : hold\n");
       break;
     case state_lift::moveToTarget:
       lift.enable();
       lift.setState(state_lift::idle);
+      printf("in state : moveToTarget\n");
+      printf("is disabled? : %i", lift.isDisabled());
       break;
     case state_lift::brake:
       lift.disable();
       lift.brake();
       lift.setState(state_lift::idle);
+      printf("in state : brake\n");
+      printf("is disabled? : %i", lift.isDisabled());
       break;
     case state_lift::rest:
       lift.rest();
       lift.setState(state_lift::idle);
+      printf("in state : rest\n");
       break;
     case state_lift::idle:
       pros::delay(10);
+      printf("in state : idle\n");
       break;
     }
     pros::delay(20);
@@ -195,7 +205,7 @@ void opcontrol() {
   pros::Task liftTask(liftControl);
 
   ControllerButton btn_dt_tgl_slew(BTN_DVTN_TGL_SLEW);
-
+  dvtn.setState(state_dvtn::plain);
   while (true) {
     if (btn_dt_tgl_slew.changedToPressed()) {
       if (dvtn.getState() == state_dvtn::plain)
