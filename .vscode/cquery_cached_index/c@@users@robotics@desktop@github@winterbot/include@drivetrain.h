@@ -24,12 +24,19 @@ public:
   class Control {
 
   public:
+    // returns the current heading of the robot in degrees
+    double getHeading();
+
     // moves the drivetrain forward, and turns at specific velocities
     void moveArcade(double tForwardVel, double tTurnVel);
     // moves the drivetrain based on velocities of both sides
     void moveTank(double tRPMLeft, double tRPMRight);
     // sets the speed to 0
     void stop();
+    // move the drivetrain to a specific orientation (field centric)
+    void turnToFace(QAngle tAngle);
+    // move the drivetrain a specific distance (robot centric)
+    void driveDistance(QLength tDistance);
 
   } ctrl;
 };

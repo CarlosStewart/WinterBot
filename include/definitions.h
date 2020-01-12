@@ -3,6 +3,8 @@
 
 // functions
 void mcroStack();
+#define hfix(i)                                                                \
+  fmod(i, 360) < 0 ? fmod(i, 360) + 360 : fmod(i, 360) == -0 ? 0 : fmod(i, 360)
 
 // motors
 const int DLF = 1;
@@ -15,6 +17,16 @@ extern Motor dvtn_right_front_motor;
 extern Motor dvtn_right_back_motor;
 extern MotorGroup dvtn_left_motors;
 extern MotorGroup dvtn_right_motors;
+const char DLT_TOP = 'B';
+const char DLT_BOTTOM = 'C';
+const bool DLT_REV = false;
+const char DRT_TOP = 'D';
+const char DRT_BOTTOM = 'E';
+const bool DRT_REV = false;
+extern ADIEncoder dvtn_left_track;
+extern ADIEncoder dvtn_right_track;
+#define LEFT_TRACK_DIST 3.0
+#define RIGHT_TRACK_DIST 3.0
 
 const int IL = 11;
 const int IR = -15;

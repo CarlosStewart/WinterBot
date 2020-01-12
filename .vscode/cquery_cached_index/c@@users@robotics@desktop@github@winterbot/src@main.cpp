@@ -198,7 +198,12 @@ void mcroControl(void *) {
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+  pros::Task intkTask(intkControl);
+  pros::Task trayTask(trayControl);
+  pros::Task liftTask(liftControl);
+  pros::Task mcroTask(mcroControl);
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
