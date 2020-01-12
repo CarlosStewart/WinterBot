@@ -56,7 +56,7 @@
 using namespace okapi;
 
 // states
-enum class state_dvtn { plain, slew, off };
+enum class state_dvtn { plain, slew, off, idle };
 enum class state_intk { in, out, precise, hold, coast };
 enum class state_tray { hold, moveToTarget, brake, rest, idle };
 enum class state_lift { hold, moveToTarget, brake, rest, idle };
@@ -71,6 +71,7 @@ enum class heights_lift {
 enum class heights_tray {
   bottom = 145,
   lifted = 840,
+  dropSpot = 2000,
   vertical = 3250,
   top = 3540
 };

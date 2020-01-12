@@ -96,6 +96,8 @@ void trayControl(void *) {
     case state_tray::moveToTarget:
       tray.enable();
       tray.setState(state_tray::idle);
+      if (tray.reachedTarget())
+        tray.setState(state_tray::brake);
       break;
     case state_tray::brake:
       tray.disable();
@@ -173,6 +175,18 @@ void liftControl(void *) {
     pros::delay(20);
   }
 }
+
+void mcroControl(void *) {
+  ControllerButton btn_mcro_stack(BTN_MCRO_STACK);
+
+  while (true) {
+    if (btn_mcro_stack.changedToPressed()) {
+      mcroStack();
+    }
+
+    pros::delay(50);
+  }
+}
 /**
  * Runs the user autonomous code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -203,6 +217,7 @@ void opcontrol() {
   pros::Task intkTask(intkControl);
   pros::Task trayTask(trayControl);
   pros::Task liftTask(liftControl);
+  pros::Task mcroTask(mcroControl);
 
   ControllerButton btn_dt_tgl_slew(BTN_DVTN_TGL_SLEW);
   dvtn.setState(state_dvtn::plain);
@@ -216,15 +231,18 @@ void opcontrol() {
 
     switch (dvtn.getState()) {
     case state_dvtn::plain:
-      dvtn.updateArcade(con.getAnalog(ControllerAnalog::leftY),
-                        con.getAnalog(ControllerAnalog::rightX), false);
+      dvtn.updateArcade(con.getAnalog(ControllerAnalog::leftY) * 200,
+                        con.getAnalog(ControllerAnalog::rightX) * 200, false);
       break;
     case state_dvtn::slew:
-      dvtn.updateArcade(con.getAnalog(ControllerAnalog::leftY),
-                        con.getAnalog(ControllerAnalog::rightX), true);
+      dvtn.updateArcade(con.getAnalog(ControllerAnalog::leftY) * 200,
+                        con.getAnalog(ControllerAnalog::rightX) * 200, true);
       break;
     case state_dvtn::off:
       dvtn.ctrl.stop();
+      break;
+    case state_dvtn::idle:
+      pros::delay(20);
     }
 
     pros::delay(20);

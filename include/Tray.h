@@ -4,11 +4,12 @@
 class Tray {
   state_tray state;
   state_tray lastState;
+  double settledRange;
   const double brakeVelRange = 20.0;
 
 public:
   // "default" constructor
-  Tray(bool isThisDumb);
+  Tray(double tSettledRange);
 
   // enables the controller
   void enable();
@@ -22,6 +23,8 @@ public:
   void setTarget(double tHeight);
   // makes the tray stop as soon as possible without jerking
   void brake();
+  // returns wheather the tray has reached its target
+  bool reachedTarget();
 
   // state Control
   // sets the state

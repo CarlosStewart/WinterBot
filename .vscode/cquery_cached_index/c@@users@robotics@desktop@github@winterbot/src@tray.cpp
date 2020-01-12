@@ -6,7 +6,8 @@ auto controllerTray =
     AsyncControllerFactory::posPID(tray_motor, tray_pot, 0.01, 0.0, 0.0);
 
 // default constructor
-Tray::Tray(bool isThisDumb) {
+Tray::Tray(double tSettledRange) {
+  settledRange = tSettledRange;
   tray_motor.setBrakeMode(AbstractMotor::brakeMode::hold);
 }
 
@@ -35,6 +36,10 @@ void Tray::brake() {
     pros::delay(50);
   }
   tray_motor.setBrakeMode(AbstractMotor::brakeMode::hold);
+}
+// returns wheather the tray has reached its target
+bool Tray::reachedTarget() {
+  return abs(controllerTray.getTarget() - tray_pot.get()) <= settledRange;
 }
 
 // state Control

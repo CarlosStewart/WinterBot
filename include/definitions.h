@@ -2,6 +2,7 @@
 #include "main.h"
 
 // functions
+void mcroStack();
 
 // motors
 const int DLF = 1;
@@ -57,4 +58,4 @@ extern Potentiometer tray_pot;
 #define BTN_LIFT_TOWER_LOW ControllerDigital::down
 #define BTN_LIFT_TOWER_MID ControllerDigital::left
 
-#define BTN_MCRO_STAK ControllerDigital::up
+#define BTN_MCRO_STACK ControllerDigital::up
