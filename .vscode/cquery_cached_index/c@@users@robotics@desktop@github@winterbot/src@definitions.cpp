@@ -8,15 +8,15 @@ void mcroStack() {
   while (tray_pot.get() < (double)heights_tray::dropSpot)
     pros::delay(20);
   intk.setState(state_intk::coast);
-  // waits until the tray is vertical
-  while (tray.getState() != state_tray::idle)
-    pros::delay(20);
+}
+
+void mcroReverse() {
   // spins the intake out
-  intk.setSpeed(-25.0);
+  intk.setSpeed(-50.0);
   intk.setState(state_intk::precise);
   // backs up the drivetrain
   dvtn.setState(state_dvtn::idle);
-  dvtn.ctrl.moveArcade(-25.0, 0.0);
+  dvtn.ctrl.moveArcade(-50.0, 0.0);
   // continues backing up for a bit, then lowers the tray
   pros::delay(1500);
   dvtn.setState(state_dvtn::plain);

@@ -3,6 +3,7 @@
 
 // functions
 void mcroStack();
+void mcroReverse();
 #define hfix(i)                                                                \
   fmod(i, 360) < 0 ? fmod(i, 360) + 360 : fmod(i, 360) == -0 ? 0 : fmod(i, 360)
 
@@ -27,6 +28,7 @@ extern ADIEncoder dvtn_left_track;
 extern ADIEncoder dvtn_right_track;
 #define LEFT_TRACK_DIST 3.0
 #define RIGHT_TRACK_DIST 3.0
+#define TRACK_DIAMETER 2.75
 
 const int IL = 11;
 const int IR = -15;
@@ -56,7 +58,7 @@ const char PT = 'A';
 extern Potentiometer tray_pot;
 
 // buttons
-#define BTN_DVTN_TGL_SLEW ControllerDigital::right
+#define BTN_DVTN_TGL_SLEW ControllerDigital::A
 
 #define BTN_INTK_TGL ControllerDigital::Y
 #define BTN_INTK_IN ControllerDigital::R1
@@ -66,8 +68,9 @@ extern Potentiometer tray_pot;
 #define BTN_TRAY_DOWN ControllerDigital::L2
 
 #define BTN_LIFT_UP ControllerDigital::X
-#define BTN_LIFT_DOWN ControllerDigital::A
-#define BTN_LIFT_TOWER_LOW ControllerDigital::down
-#define BTN_LIFT_TOWER_MID ControllerDigital::left
+#define BTN_LIFT_DOWN ControllerDigital::B
+#define BTN_LIFT_TOWER_LOW ControllerDigital::left
+#define BTN_LIFT_TOWER_MID ControllerDigital::right
 
 #define BTN_MCRO_STACK ControllerDigital::up
+#define BTN_MCRO_REVERSE ControllerDigital::down

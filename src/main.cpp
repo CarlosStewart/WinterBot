@@ -178,10 +178,13 @@ void liftControl(void *) {
 
 void mcroControl(void *) {
   ControllerButton btn_mcro_stack(BTN_MCRO_STACK);
+  ControllerButton btn_mcro_reverse(BTN_MCRO_REVERSE);
 
   while (true) {
     if (btn_mcro_stack.changedToPressed()) {
       mcroStack();
+    } else if (btn_mcro_reverse.changedToPressed()) {
+      mcroReverse();
     }
 
     pros::delay(50);
@@ -198,12 +201,7 @@ void mcroControl(void *) {
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {
-  pros::Task intkTask(intkControl);
-  pros::Task trayTask(trayControl);
-  pros::Task liftTask(liftControl);
-  pros::Task mcroTask(mcroControl);
-}
+void autonomous() { dvtn.ctrl.driveDistance(8_ft); }
 
 /**
  * Runs the operator control code. This function will be started in its own task

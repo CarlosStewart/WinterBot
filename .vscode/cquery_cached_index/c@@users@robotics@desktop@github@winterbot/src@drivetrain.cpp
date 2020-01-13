@@ -76,21 +76,16 @@ void Drivetrain::Control::stop() {
   dvtn_right_motors.moveVelocity(0.0);
 }
 // move the drivetrain to a specific orientation (field centric)
-void Drivetrain::Control::turnToFace(QAngle tAngle) {
+void Drivetrain::Control::turnToFace(QAngle tAngle, double tTurnSuccessRange) {
   double kp = 0.01;
   double ki = 0.0000000000001;
   double kd = 0.0;
   double integralActiveZone = 10.0;
   double target = tAngle.convert(degree);
-  double error;
-  double lastError;
-  double totalError;
-  double proportion;
-  double integral;
-  double deriative;
+  double error, lastError, totalError, proportion, integral, deriative;
 
-  while (true) {
-    error = getHeading() - target;
+  do {
+    error = target - getHeading();
 
     if (error < integralActiveZone && error != 0)
       totalError += error;
@@ -110,10 +105,47 @@ void Drivetrain::Control::turnToFace(QAngle tAngle) {
     lastError = error;
 
     moveArcade(0.0, proportion + integral + deriative);
-  }
+  } while (abs(error) < tTurnSuccessRange);
+}
+void Drivetrain::Control::turnToFace(QAngle tAngle) {
+  turnToFace(tAngle, turnSuccessRange);
 }
 // move the drivetrain a specific distance (robot centric)
-void Drivetrain::Control::driveDistance(QLength tDistance);
+void Drivetrain::Control::driveDistance(QLength tDistance,
+                                        double tStraightSuccessRange) {
+  double kp = 0.01;
+  double ki = 0.00000000000001;
+  double kd = 0.0;
+  double integralActiveZone = 7.0;
+  double target = tDistance.convert(inch) +
+                  dvtn_right_track.get() / 360 * TRACK_DIAMETER * pi;
+  double error, lastError, totalError, proportion, integral, deriative;
 
+  do {
+    error = target - dvtn_right_track.get();
+
+    if (error < integralActiveZone && error != 0)
+      totalError += error;
+    else
+      totalError = 0;
+
+    if (totalError > 50 / ki)
+      totalError = 50 / ki;
+
+    if (error == 0)
+      deriative = 0;
+
+    proportion = error * kp;
+    integral = totalError * ki;
+    deriative = (error - lastError) * kd;
+
+    lastError = error;
+
+    moveArcade(proportion + integral + deriative, 0.0);
+  } while (abs(error) < tStraightSuccessRange);
+}
+void Drivetrain::Control::driveDistance(QLength tDistance) {
+  driveDistance(tDistance, straightSuccessRange);
+}
 // creation of dt object
 Drivetrain dvtn(5.0);
