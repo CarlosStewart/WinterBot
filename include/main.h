@@ -71,8 +71,8 @@ enum class heights_lift {
 enum class heights_tray {
   bottom = 145,
   lifted = 840,
-  dropSpot = 2000,
-  vertical = 3250,
+  dropSpot = 1725,
+  vertical = 2765,
   top = 3540
 };
 

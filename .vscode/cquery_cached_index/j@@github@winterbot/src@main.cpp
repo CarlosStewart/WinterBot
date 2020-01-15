@@ -28,36 +28,11 @@ void disabled() {}
  */
 void competition_initialize() {}
 
-void dvtnControl(void *) {
-  ControllerButton btn_dt_tgl_slew(BTN_DVTN_TGL_SLEW);
-
-  while (true) {
-    if (btn_dt_tgl_slew.changedToPressed()) {
-      if (dvtn.getState() == state_dvtn::plain)
-        dvtn.setState(state_dvtn::slew);
-      else if (dvtn.getState() == state_dvtn::slew)
-        dvtn.setState(state_dvtn::plain);
-    }
-
-    switch (dvtn.getState()) {
-    case state_dvtn::plain:
-      dvtn.updateArcade(con.getAnalog(ControllerAnalog::leftY),
-                        con.getAnalog(ControllerAnalog::rightX), false);
-      break;
-    case state_dvtn::slew:
-      dvtn.updateArcade(con.getAnalog(ControllerAnalog::leftY),
-                        con.getAnalog(ControllerAnalog::rightX), true);
-      break;
-    case state_dvtn::off:
-      dvtn.ctrl.stop();
-    }
-  }
-}
-
 void intkControl(void *) {
   ControllerButton btn_intk_tgl(BTN_INTK_TGL);
   ControllerButton btn_intk_in(BTN_INTK_IN);
   ControllerButton btn_intk_out(BTN_INTK_OUT);
+  intk.setState(state_intk::hold);
 
   while (true) {
     if (btn_intk_tgl.changedToPressed()) {
@@ -70,6 +45,9 @@ void intkControl(void *) {
       intk.setState(state_intk::in);
     } else if (btn_intk_out.changedToPressed()) {
       intk.setState(state_intk::out);
+    } else if (btn_intk_in.changedToReleased() ||
+               btn_intk_out.changedToReleased()) {
+      intk.setState(state_intk::hold);
     }
 
     switch (intk.getState()) {
@@ -89,10 +67,129 @@ void intkControl(void *) {
       intk.stop(false);
       break;
     }
+    pros::delay(20);
   }
 }
 
-void trayControl(void *){}
+void trayControl(void *) {
+  ControllerButton btn_tray_up(BTN_TRAY_UP);
+  ControllerButton btn_tray_down(BTN_TRAY_DOWN);
+  tray.setState(state_tray::rest);
+
+  while (true) {
+    if (btn_tray_up.changedToPressed()) {
+      tray.setTarget(heights_tray::vertical);
+      tray.setState(state_tray::moveToTarget);
+    } else if (btn_tray_down.changedToPressed()) {
+      tray.setTarget(heights_tray::bottom);
+      tray.setState(state_tray::moveToTarget);
+    } else if (btn_tray_up.changedToReleased() ||
+               btn_tray_down.changedToReleased()) {
+      tray.setState(state_tray::brake);
+    }
+
+    switch (tray.getState()) {
+    case state_tray::hold:
+      tray.disable();
+      tray.setState(state_tray::idle);
+      break;
+    case state_tray::moveToTarget:
+      tray.enable();
+      tray.setState(state_tray::idle);
+      if (tray.reachedTarget())
+        tray.setState(state_tray::brake);
+      break;
+    case state_tray::brake:
+      tray.disable();
+      tray.brake();
+      tray.setState(state_tray::idle);
+      break;
+    case state_tray::rest:
+      tray.rest();
+      tray.setState(state_tray::idle);
+      break;
+    case state_tray::idle:
+      pros::delay(10);
+    }
+
+    pros::delay(20);
+  }
+}
+
+void liftControl(void *) {
+  ControllerButton btn_lift_up(BTN_LIFT_UP);
+  ControllerButton btn_lift_down(BTN_LIFT_DOWN);
+  ControllerButton btn_lift_tower_low(BTN_LIFT_TOWER_LOW);
+  ControllerButton btn_lift_tower_mid(BTN_LIFT_TOWER_MID);
+  lift.setState(state_lift::hold);
+
+  while (true) {
+    if (btn_lift_up.changedToPressed()) {
+      lift.setTarget(heights_lift::top);
+      lift.setState(state_lift::moveToTarget);
+    } else if (btn_lift_down.changedToPressed()) {
+      lift.setTarget(heights_lift::bottom);
+      lift.setState(state_lift::moveToTarget);
+    } else if (btn_lift_tower_low.changedToPressed()) {
+      lift.setTarget(heights_lift::lowTower);
+      lift.setState(state_lift::moveToTarget);
+    } else if (btn_lift_tower_mid.changedToPressed()) {
+      lift.setTarget(heights_lift::midTower);
+      lift.setState(state_lift::moveToTarget);
+    } else if (btn_lift_up.changedToReleased() ||
+               btn_lift_down.changedToReleased() ||
+               btn_lift_tower_low.changedToReleased() ||
+               btn_lift_tower_mid.changedToReleased()) {
+      lift.setState(state_lift::brake);
+    }
+
+    switch (lift.getState()) {
+    case state_lift::hold:
+      lift.disable();
+      lift.setState(state_lift::idle);
+      printf("in state : hold\n");
+      break;
+    case state_lift::moveToTarget:
+      lift.enable();
+      lift.setState(state_lift::idle);
+      printf("in state : moveToTarget\n");
+      printf("is disabled? : %i", lift.isDisabled());
+      break;
+    case state_lift::brake:
+      lift.disable();
+      lift.brake();
+      lift.setState(state_lift::idle);
+      printf("in state : brake\n");
+      printf("is disabled? : %i", lift.isDisabled());
+      break;
+    case state_lift::rest:
+      lift.rest();
+      lift.setState(state_lift::idle);
+      printf("in state : rest\n");
+      break;
+    case state_lift::idle:
+      pros::delay(10);
+      printf("in state : idle\n");
+      break;
+    }
+    pros::delay(20);
+  }
+}
+
+void mcroControl(void *) {
+  ControllerButton btn_mcro_stack(BTN_MCRO_STACK);
+  ControllerButton btn_mcro_reverse(BTN_MCRO_REVERSE);
+
+  while (true) {
+    if (btn_mcro_stack.changedToPressed()) {
+      mcroStack();
+    } else if (btn_mcro_reverse.changedToPressed()) {
+      mcroReverse();
+    }
+
+    pros::delay(50);
+  }
+}
 /**
  * Runs the user autonomous code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -104,7 +201,7 @@ void trayControl(void *){}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() { dvtn.ctrl.driveDistance(8_ft); }
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -120,9 +217,37 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-  pros::Task dvtnTask(dvtnControl);
   pros::Task intkTask(intkControl);
+  pros::Task trayTask(trayControl);
+  pros::Task liftTask(liftControl);
+  pros::Task mcroTask(mcroControl);
+
+  ControllerButton btn_dt_tgl_slew(BTN_DVTN_TGL_SLEW);
+  dvtn.setState(state_dvtn::plain);
   while (true) {
+    if (btn_dt_tgl_slew.changedToPressed()) {
+      if (dvtn.getState() == state_dvtn::plain)
+        dvtn.setState(state_dvtn::slew);
+      else if (dvtn.getState() == state_dvtn::slew)
+        dvtn.setState(state_dvtn::plain);
+    }
+
+    switch (dvtn.getState()) {
+    case state_dvtn::plain:
+      dvtn.updateArcade(con.getAnalog(ControllerAnalog::leftY) * 200,
+                        con.getAnalog(ControllerAnalog::rightX) * 200, false);
+      break;
+    case state_dvtn::slew:
+      dvtn.updateArcade(con.getAnalog(ControllerAnalog::leftY) * 200,
+                        con.getAnalog(ControllerAnalog::rightX) * 200, true);
+      break;
+    case state_dvtn::off:
+      dvtn.ctrl.stop();
+      break;
+    case state_dvtn::idle:
+      pros::delay(20);
+    }
+
     pros::delay(20);
   }
 }

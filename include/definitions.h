@@ -31,7 +31,7 @@ extern ADIEncoder dvtn_right_track;
 #define TRACK_DIAMETER 2.75
 
 const int IL = 11;
-const int IR = -15;
+const int IR = -14;
 extern MotorGroup intk_motors;
 
 const int TRAY = -5;
