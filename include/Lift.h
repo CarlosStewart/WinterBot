@@ -21,6 +21,8 @@ public:
   // sets the target height of the controller
   void setTarget(heights_lift tHeight);
   void setTarget(double tHeight);
+  // returns the target height of the controller
+  double getTarget();
   // makes the lift stop as soon as possible without jerking
   void brake();
 

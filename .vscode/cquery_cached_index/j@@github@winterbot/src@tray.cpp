@@ -27,6 +27,10 @@ void Tray::setTarget(heights_tray tHeight) {
   controllerTray.setTarget((double)tHeight);
 }
 void Tray::setTarget(double tHeight) { controllerTray.setTarget(tHeight); }
+// returns the target height of the tray
+double Tray::getTarget(){
+  return controllerTray.getTarget();
+}
 // makes the tray stop as soon as possible without jerking
 void Tray::brake() {
   tray_motor.setBrakeMode(AbstractMotor::brakeMode::coast);

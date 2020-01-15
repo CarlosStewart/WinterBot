@@ -150,6 +150,8 @@ void liftControl(void *) {
       printf("in state : hold\n");
       break;
     case state_lift::moveToTarget:
+      if(lift.getTarget() > 400)
+        tray.setTarget(heights_tray::lifted);
       lift.enable();
       lift.setState(state_lift::idle);
       printf("in state : moveToTarget\n");
@@ -168,6 +170,9 @@ void liftControl(void *) {
       printf("in state : rest\n");
       break;
     case state_lift::idle:
+      if(tray.getTarget() == (double) heights_tray::lifted && lift.getTarget() == (double) heights_lift::bottom){
+        tray.setTarget(heights_tray::bottom);
+      }
       pros::delay(10);
       printf("in state : idle\n");
       break;

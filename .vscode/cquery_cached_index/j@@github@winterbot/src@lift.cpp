@@ -33,6 +33,10 @@ void Lift::setTarget(heights_lift tHeight) {
   controllerLift.setTarget((double)tHeight);
 }
 void Lift::setTarget(double tHeight) { controllerLift.setTarget(tHeight); }
+// returns the target height of the controller
+double Lift::getTarget(){
+  return controllerLift.getTarget();
+}
 // makes the lift stop as soon as possible without jerking
 void Lift::brake() {
   lift_motor.setBrakeMode(AbstractMotor::brakeMode::coast);
