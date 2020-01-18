@@ -1,9 +1,9 @@
 #include "main.h"
 
 Motor tray_motor(TRAY);
-Potentiometer tray_pot(PT);
+Potentiometer tray_pot(PT);// 0.009, 0.0, 0.0002
 auto controllerTray =
-    AsyncControllerFactory::posPID(tray_motor, tray_pot, 0.01, 0.0, 0.0);
+    AsyncControllerFactory::posPID(tray_motor, tray_pot, 0.007, 0.0, 0.00015);
 
 // default constructor
 Tray::Tray(double tSettledRange) {
@@ -27,6 +27,10 @@ void Tray::setTarget(heights_tray tHeight) {
   controllerTray.setTarget((double)tHeight);
 }
 void Tray::setTarget(double tHeight) { controllerTray.setTarget(tHeight); }
+// returns the target height of the tray
+double Tray::getTarget(){
+  return controllerTray.getTarget();
+}
 // makes the tray stop as soon as possible without jerking
 void Tray::brake() {
   tray_motor.setBrakeMode(AbstractMotor::brakeMode::coast);

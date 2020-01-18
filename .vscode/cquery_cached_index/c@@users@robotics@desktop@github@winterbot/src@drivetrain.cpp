@@ -41,6 +41,11 @@ void Drivetrain::updateArcade(double tForwardVel, double tTurnVel,
   }
 }
 
+void Drivetrain::printEncoders() {
+  printf("left encoder: %f          right encoder: %f\n", dvtn_left_track.get(),
+         dvtn_right_track.get());
+}
+
 // state Control
 // sets the state
 void Drivetrain::setState(state_dvtn tState) { state = tState; }
@@ -113,7 +118,7 @@ void Drivetrain::Control::turnToFace(QAngle tAngle) {
 // move the drivetrain a specific distance (robot centric)
 void Drivetrain::Control::driveDistance(QLength tDistance,
                                         double tStraightSuccessRange) {
-  double kp = 0.01;
+  double kp = 1;
   double ki = 0.00000000000001;
   double kd = 0.0;
   double integralActiveZone = 7.0;
@@ -122,7 +127,7 @@ void Drivetrain::Control::driveDistance(QLength tDistance,
   double error, lastError, totalError, proportion, integral, deriative;
 
   do {
-    error = target - dvtn_right_track.get();
+    error = target - dvtn_right_track.get() / 360 * TRACK_DIAMETER * pi;
 
     if (error < integralActiveZone && error != 0)
       totalError += error;
@@ -140,6 +145,8 @@ void Drivetrain::Control::driveDistance(QLength tDistance,
     deriative = (error - lastError) * kd;
 
     lastError = error;
+
+    printf("target: %f     error: %f", target, error);
 
     moveArcade(proportion + integral + deriative, 0.0);
   } while (abs(error) < tStraightSuccessRange);

@@ -15,6 +15,8 @@ public:
   // moves the drivetrain with or without slew (for joystick control)
   void updateArcade(double tForwardVel, double tTurnVel, bool tSlewOn);
 
+  void printEncoders();
+
   // state Control
   // sets the state
   void setState(state_dvtn tState);

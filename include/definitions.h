@@ -18,12 +18,12 @@ extern Motor dvtn_right_front_motor;
 extern Motor dvtn_right_back_motor;
 extern MotorGroup dvtn_left_motors;
 extern MotorGroup dvtn_right_motors;
-const char DLT_TOP = 'B';
-const char DLT_BOTTOM = 'C';
-const bool DLT_REV = false;
-const char DRT_TOP = 'D';
-const char DRT_BOTTOM = 'E';
-const bool DRT_REV = false;
+const char DLT_TOP = 'E';
+const char DLT_BOTTOM = 'F';
+const bool DLT_REV = true;
+const char DRT_TOP = 'C';
+const char DRT_BOTTOM = 'D';
+const bool DRT_REV = true;
 extern ADIEncoder dvtn_left_track;
 extern ADIEncoder dvtn_right_track;
 #define LEFT_TRACK_DIST 3.0

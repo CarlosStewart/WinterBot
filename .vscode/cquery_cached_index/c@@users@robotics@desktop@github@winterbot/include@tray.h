@@ -21,6 +21,8 @@ public:
   // sets the target height of the controller
   void setTarget(heights_tray tHeight);
   void setTarget(double tHeight);
+  // returns the target height of the tray
+  double getTarget();
   // makes the tray stop as soon as possible without jerking
   void brake();
   // returns wheather the tray has reached its target
