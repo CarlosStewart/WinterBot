@@ -170,13 +170,7 @@ void mcroControl(void *) {
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
-void initialize() {
-  pros::lcd::initialize();
-  pros::Task intkTask(intkControl);
-  pros::Task trayTask(trayControl);
-  pros::Task liftTask(liftControl);
-  pros::Task mcroTask(mcroControl);
-}
+void initialize() { pros::lcd::initialize(); }
 
 /**
  * Runs while the robot is in the disabled state of Field Management System or
@@ -207,7 +201,10 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() { dvtn.ctrl.driveDistance(2_ft); }
+void autonomous() {
+  // dvtn.ctrl.driveDistance(6_ft);
+  dvtn.ctrl.driveDistance(-6_ft);
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -223,6 +220,10 @@ void autonomous() { dvtn.ctrl.driveDistance(2_ft); }
  * task, not resume it from where it left off.
  */
 void opcontrol() {
+  pros::Task intkTask(intkControl);
+  pros::Task trayTask(trayControl);
+  pros::Task liftTask(liftControl);
+  pros::Task mcroTask(mcroControl);
 
   ControllerButton btn_dt_tgl_slew(BTN_DVTN_TGL_SLEW);
   dvtn.setState(state_dvtn::plain);
@@ -237,7 +238,8 @@ void opcontrol() {
     double test = dvtn_left_track.get();
 
     pros::lcd::print(0, "left encoder: %f", test);
-    pros::lcd::print(1, "right encoder: %f", dvtn_right_track.get());
+    pros::lcd::print(1, "right encoder: %f",
+                     dvtn_right_track.get() / 360 * (TRACK_DIAMETER * pi));
 
     switch (dvtn.getState()) {
     case state_dvtn::plain:

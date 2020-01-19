@@ -25,7 +25,10 @@ public:
 
   class Control {
     const double turnSuccessRange = 2.0;     // degrees
-    const double straightSuccessRange = 2.0; // inches
+    const double straightSuccessRange = 3.0; // degrees
+    const double straightMaxSpeed = 150.0;
+    const double straightSlewIncrement = 10;
+    const int straightSettledForCounts = 50;
 
   public:
     // returns the current heading of the robot in degrees
@@ -41,7 +44,8 @@ public:
     void turnToFace(QAngle tAngle, double tTurnSuccessRange);
     void turnToFace(QAngle tAngle);
     // move the drivetrain a specific distance (robot centric)
-    void driveDistance(QLength tDistance, double tStraightSuccessRange);
+    void driveDistance(QLength tDistance, double tMaxSpeed,
+                       double tSlewIncrement);
     void driveDistance(QLength tDistance);
 
   } ctrl;

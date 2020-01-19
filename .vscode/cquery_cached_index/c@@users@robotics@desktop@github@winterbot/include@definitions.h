@@ -4,6 +4,7 @@
 // functions
 void mcroStack();
 void mcroReverse();
+void mcroGetRow();
 #define hfix(i)                                                                \
   fmod(i, 360) < 0 ? fmod(i, 360) + 360 : fmod(i, 360) == -0 ? 0 : fmod(i, 360)
 
@@ -28,10 +29,10 @@ extern ADIEncoder dvtn_left_track;
 extern ADIEncoder dvtn_right_track;
 #define LEFT_TRACK_DIST 3.0
 #define RIGHT_TRACK_DIST 3.0
-#define TRACK_DIAMETER 2.75
+#define TRACK_DIAMETER 2.859824
 
 const int IL = 11;
-const int IR = -13;
+const int IR = -12;
 extern MotorGroup intk_motors;
 
 const int TRAY = -5;

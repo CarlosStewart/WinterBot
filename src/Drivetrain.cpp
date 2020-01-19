@@ -19,6 +19,10 @@ Drivetrain::Drivetrain(double tSlewIncrement) {
 // public movement methods
 void Drivetrain::updateArcade(double tForwardVel, double tTurnVel,
                               bool tSlewOn) {
+
+  tForwardVel *= abs(tForwardVel) / 200;
+  tTurnVel *= abs(tTurnVel) / 200;
+
   if (tSlewOn) {
     // update target forward velocity
     if (tForwardVel > nextForwardVel) {
@@ -99,6 +103,8 @@ void Drivetrain::Control::turnToFace(QAngle tAngle, double tTurnSuccessRange) {
 
     if (totalError > 50 / ki)
       totalError = 50 / ki;
+    else if (totalError > -50 / ki)
+      totalError = -50 / ki;
 
     if (error == 0)
       deriative = 0;
@@ -110,31 +116,36 @@ void Drivetrain::Control::turnToFace(QAngle tAngle, double tTurnSuccessRange) {
     lastError = error;
 
     moveArcade(0.0, proportion + integral + deriative);
+
+    pros::delay(20);
   } while (abs(error) < tTurnSuccessRange);
 }
 void Drivetrain::Control::turnToFace(QAngle tAngle) {
   turnToFace(tAngle, turnSuccessRange);
 }
 // move the drivetrain a specific distance (robot centric)
-void Drivetrain::Control::driveDistance(QLength tDistance,
-                                        double tStraightSuccessRange) {
-  double kp = 1;
-  double ki = 0.00000000000001;
+void Drivetrain::Control::driveDistance(QLength tDistance, double tMaxSpeed,
+                                        double tSlewIncrement) {
+  double kp = 0.37;
+  double ki = 0.0;
   double kd = 0.0;
-  double integralActiveZone = 7.0;
-  double target = tDistance.convert(inch) +
-                  dvtn_right_track.get() / 360 * TRACK_DIAMETER * pi;
-  double error, lastError, totalError, proportion, integral, deriative;
+  double integralActiveZone = 500.0;
+  double target = tDistance.convert(inch) * 360 / (TRACK_DIAMETER * pi) +
+                  dvtn_right_track.get();
+  double error, lastError, totalError, proportion, integral, deriative,
+      totalSpeed, lastTotalSpeed;
 
   do {
-    error = target - dvtn_right_track.get() / 360 * TRACK_DIAMETER * pi;
+    error = target - dvtn_right_track.get();
 
-    if (error < integralActiveZone && error != 0)
+    if (abs(error) < integralActiveZone && error != 0)
       totalError += error;
     else
       totalError = 0;
 
     if (totalError > 50 / ki)
+      totalError = 50 / ki;
+    else if (totalError < -50 / ki)
       totalError = 50 / ki;
 
     if (error == 0)
@@ -146,13 +157,35 @@ void Drivetrain::Control::driveDistance(QLength tDistance,
 
     lastError = error;
 
-    printf("target: %f     error: %f", target, error);
+    totalSpeed = proportion + integral + deriative;
 
-    moveArcade(proportion + integral + deriative, 0.0);
-  } while (abs(error) < tStraightSuccessRange);
+    if (tDistance > 0_in && totalSpeed > lastTotalSpeed + tSlewIncrement)
+      totalSpeed = lastTotalSpeed + tSlewIncrement;
+    else if (totalSpeed < lastTotalSpeed - tSlewIncrement)
+      totalSpeed = lastTotalSpeed - tSlewIncrement;
+
+    if (totalSpeed > tMaxSpeed)
+      totalSpeed = tMaxSpeed;
+    else if (totalSpeed < -tMaxSpeed)
+      totalSpeed = -tMaxSpeed;
+
+    lastTotalSpeed = totalSpeed;
+
+    pros::lcd::print(0, "target: %f     error: %f", target, error);
+    pros::lcd::print(1, "right encoder: %f", dvtn_right_track.get());
+    pros::lcd::print(2, "p: %f   i: %f   d: %f", proportion, integral,
+                     deriative);
+    pros::lcd::print(3, "traveled %f inches",
+                     dvtn_right_track.get() / 360 * TRACK_DIAMETER * pi);
+
+    moveArcade(totalSpeed, 0.0);
+
+    pros::delay(20);
+  } while (abs(error) > straightSuccessRange);
+  moveArcade(0.0, 0.0);
 }
 void Drivetrain::Control::driveDistance(QLength tDistance) {
-  driveDistance(tDistance, straightSuccessRange);
+  driveDistance(tDistance, straightMaxSpeed, straightSlewIncrement);
 }
 // creation of dt object
 Drivetrain dvtn(5.0);

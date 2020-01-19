@@ -25,3 +25,12 @@ void mcroReverse() {
   // turns off the intake
   intk.setState(state_intk::hold);
 }
+
+void mcroGetRow() {
+  intk.setSpeed(100.0);
+  intk.setState(state_intk::precise);
+  dvtn.setState(state_dvtn::idle);
+  dvtn.ctrl.moveArcade(70.0, 0.0);
+  pros::delay(3000);
+  dvtn.setState(state_dvtn::plain);
+}
