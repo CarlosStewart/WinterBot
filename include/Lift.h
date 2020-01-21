@@ -13,6 +13,8 @@ public:
   void enable();
   // disables the controller
   void disable();
+  // waits until the controller has reached its target
+  void waitForController();
   // returns wheather or not it is disabled
   int isDisabled();
 

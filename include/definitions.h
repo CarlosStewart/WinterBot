@@ -27,8 +27,8 @@ const char DRT_BOTTOM = 'D';
 const bool DRT_REV = true;
 extern ADIEncoder dvtn_left_track;
 extern ADIEncoder dvtn_right_track;
-#define LEFT_TRACK_DIST 3.0
-#define RIGHT_TRACK_DIST 3.0
+#define LEFT_TRACK_DIST 2.56
+#define RIGHT_TRACK_DIST 2.56
 #define TRACK_DIAMETER 2.859824
 
 const int IL = 11;

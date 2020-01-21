@@ -156,6 +156,8 @@ void mcroControl(void *) {
   while (true) {
     if (btn_mcro_stack.changedToPressed()) {
       mcroStack();
+      pros::delay(1000);
+      mcroReverse();
     } else if (btn_mcro_reverse.changedToPressed()) {
       mcroReverse();
     }
@@ -202,8 +204,14 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-  // dvtn.ctrl.driveDistance(6_ft);
-  dvtn.ctrl.driveDistance(-6_ft);
+  intk.spin(-200);
+  pros::delay(500);
+  intk.spin(200);
+  dvtn.ctrl.driveDistance(3_ft, 65.0);
+  dvtn.ctrl.turnToFace(-30_deg);
+  dvtn.ctrl.driveDistance(-3_ft);
+  dvtn.ctrl.turnToFace(0_deg);
+  dvtn.ctrl.driveDistance(3_ft, 65.0);
 }
 
 /**
@@ -237,7 +245,7 @@ void opcontrol() {
 
     double test = dvtn_left_track.get();
 
-    pros::lcd::print(0, "left encoder: %f", test);
+    pros::lcd::print(0, "heading: %f", dvtn.ctrl.getHeading());
     pros::lcd::print(1, "right encoder: %f",
                      dvtn_right_track.get() / 360 * (TRACK_DIAMETER * pi));
 

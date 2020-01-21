@@ -24,11 +24,13 @@ public:
   state_dvtn getState();
 
   class Control {
-    const double turnSuccessRange = 2.0;     // degrees
-    const double straightSuccessRange = 3.0; // degrees
+    const double straightSuccessRange = 2.0; // degrees
     const double straightMaxSpeed = 150.0;
     const double straightSlewIncrement = 10;
     const int straightSettledForCounts = 50;
+
+    const double turnMaxSpeed = 200.0;
+    const double turnSuccessRange = 2.0; // degrees
 
   public:
     // returns the current heading of the robot in degrees
@@ -41,11 +43,12 @@ public:
     // sets the speed to 0
     void stop();
     // move the drivetrain to a specific orientation (field centric)
-    void turnToFace(QAngle tAngle, double tTurnSuccessRange);
+    void turnToFace(QAngle tAngle, double tMaxSpeed);
     void turnToFace(QAngle tAngle);
     // move the drivetrain a specific distance (robot centric)
     void driveDistance(QLength tDistance, double tMaxSpeed,
                        double tSlewIncrement);
+    void driveDistance(QLength tDistance, double tMaxSpeed);
     void driveDistance(QLength tDistance);
 
   } ctrl;

@@ -15,6 +15,7 @@ void mcroReverse() {
   intk.setSpeed(-50.0);
   intk.setState(state_intk::precise);
   // backs up the drivetrain
+  pros::delay(100);
   dvtn.setState(state_dvtn::idle);
   dvtn.ctrl.moveArcade(-50.0, 0.0);
   // continues backing up for a bit, then lowers the tray

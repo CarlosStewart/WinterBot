@@ -3,7 +3,7 @@
 Motor tray_motor(TRAY);
 Potentiometer tray_pot(PT); // 0.009, 0.0, 0.0002
 auto controllerTray =
-    AsyncControllerFactory::posPID(tray_motor, tray_pot, 0.005, 0.0, 0.00015);
+    AsyncControllerFactory::posPID(tray_motor, tray_pot, 0.003, 0.0, 0.00015);
 
 // default constructor
 Tray::Tray(double tSettledRange) {

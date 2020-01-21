@@ -64,8 +64,8 @@ state_dvtn Drivetrain::getState() { return state; }
 
 // returns the current heading of the robot in degrees
 double Drivetrain::Control::getHeading() {
-  return hfix((dvtn_left_track.get() - dvtn_right_track.get()) /
-              (LEFT_TRACK_DIST + RIGHT_TRACK_DIST) * 180 / pi);
+  return 1.393015905679 * (dvtn_left_track.get() - dvtn_right_track.get()) /
+         (LEFT_TRACK_DIST + RIGHT_TRACK_DIST);
 }
 
 // basic movement methods
@@ -85,26 +85,27 @@ void Drivetrain::Control::stop() {
   dvtn_right_motors.moveVelocity(0.0);
 }
 // move the drivetrain to a specific orientation (field centric)
-void Drivetrain::Control::turnToFace(QAngle tAngle, double tTurnSuccessRange) {
-  double kp = 0.01;
-  double ki = 0.0000000000001;
-  double kd = 0.0;
+void Drivetrain::Control::turnToFace(QAngle tAngle, double tMaxSpeed) {
+  double kp = 1.3;
+  double ki = 0.0;
+  double kd = 0.1;
   double integralActiveZone = 10.0;
   double target = tAngle.convert(degree);
-  double error, lastError, totalError, proportion, integral, deriative;
+  double error, lastError, totalError, proportion, integral, deriative,
+      totalSpeed;
 
   do {
     error = target - getHeading();
 
-    if (error < integralActiveZone && error != 0)
+    if (abs(error) < integralActiveZone && error != 0)
       totalError += error;
     else
       totalError = 0;
 
     if (totalError > 50 / ki)
       totalError = 50 / ki;
-    else if (totalError > -50 / ki)
-      totalError = -50 / ki;
+    else if (totalError < -50 / ki)
+      totalError = 50 / ki;
 
     if (error == 0)
       deriative = 0;
@@ -113,22 +114,36 @@ void Drivetrain::Control::turnToFace(QAngle tAngle, double tTurnSuccessRange) {
     integral = totalError * ki;
     deriative = (error - lastError) * kd;
 
+    totalSpeed = proportion + integral + deriative;
+
+    if (totalSpeed > tMaxSpeed)
+      totalSpeed = tMaxSpeed;
+
     lastError = error;
 
-    moveArcade(0.0, proportion + integral + deriative);
+    pros::lcd::print(0, "target: %f     error: %f", target, error);
+    pros::lcd::print(1, "heading: %f", getHeading());
+    pros::lcd::print(2, "p: %f   i: %f   d: %f", proportion, integral,
+                     deriative);
+    pros::lcd::print(3, "totatSpeed: %f", totalSpeed);
+    pros::lcd::print(4, "turnSuccessRange: %f", turnSuccessRange);
+    pros::lcd::print(5, "t: %i   f: %i   cdtinl: %i", true, false,
+                     abs(error) > turnSuccessRange);
+
+    moveArcade(0.0, totalSpeed);
 
     pros::delay(20);
-  } while (abs(error) < tTurnSuccessRange);
+  } while (abs(error) > turnSuccessRange);
 }
 void Drivetrain::Control::turnToFace(QAngle tAngle) {
-  turnToFace(tAngle, turnSuccessRange);
+  turnToFace(tAngle, turnMaxSpeed);
 }
 // move the drivetrain a specific distance (robot centric)
 void Drivetrain::Control::driveDistance(QLength tDistance, double tMaxSpeed,
                                         double tSlewIncrement) {
-  double kp = 0.37;
+  double kp = 0.46;
   double ki = 0.0;
-  double kd = 0.0;
+  double kd = 1;
   double integralActiveZone = 500.0;
   double target = tDistance.convert(inch) * 360 / (TRACK_DIAMETER * pi) +
                   dvtn_right_track.get();
@@ -171,18 +186,14 @@ void Drivetrain::Control::driveDistance(QLength tDistance, double tMaxSpeed,
 
     lastTotalSpeed = totalSpeed;
 
-    pros::lcd::print(0, "target: %f     error: %f", target, error);
-    pros::lcd::print(1, "right encoder: %f", dvtn_right_track.get());
-    pros::lcd::print(2, "p: %f   i: %f   d: %f", proportion, integral,
-                     deriative);
-    pros::lcd::print(3, "traveled %f inches",
-                     dvtn_right_track.get() / 360 * TRACK_DIAMETER * pi);
-
     moveArcade(totalSpeed, 0.0);
 
     pros::delay(20);
   } while (abs(error) > straightSuccessRange);
   moveArcade(0.0, 0.0);
+}
+void Drivetrain::Control::driveDistance(QLength tDistance, double tMaxSpeed) {
+  driveDistance(tDistance, tMaxSpeed, straightSlewIncrement);
 }
 void Drivetrain::Control::driveDistance(QLength tDistance) {
   driveDistance(tDistance, straightMaxSpeed, straightSlewIncrement);
