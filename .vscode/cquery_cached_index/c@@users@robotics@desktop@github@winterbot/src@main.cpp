@@ -204,28 +204,53 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-  intk.spin(-200);
-  pros::delay(500);
-  intk.spin(200);
-  dvtn.ctrl.driveDistance(3_ft, 65.0);
-  dvtn.ctrl.turnToFace(-30_deg);
-  dvtn.ctrl.driveDistance(-3_ft);
-  dvtn.ctrl.turnToFace(0_deg);
-  dvtn.ctrl.driveDistance(3_ft, 65.0);
+  int auton = 2;
+  switch (auton) {
+  case 1:
+    // 9Red - gets 9 cubes
+    intk.spin(-200);
+    pros::delay(800);
+    intk.spin(200);
+    dvtn.ctrl.driveDistance(3_ft, 65.0);
+    dvtn.ctrl.turnToFace(-35_deg, 30.0);
+    dvtn.ctrl.driveDistance(-3.3_ft);
+    dvtn.ctrl.turnToFace(0_deg, 30.0);
+    dvtn.ctrl.driveDistance(3_ft, 45.0);
+    dvtn.ctrl.turnToFace(-15_deg, 40.0);
+    dvtn.ctrl.driveDistance(1_ft, 30.0);
+    dvtn.ctrl.driveDistance(-2_ft, 100.0);
+    break;
+  case 2:
+    // 5Red - stacks 5 cubes
+    intk.spin(-200);
+    pros::delay(800);
+    intk.spin(200);
+    dvtn.ctrl.driveDistance(3_ft, 65.0);
+    dvtn.ctrl.turnToFace(150_deg, 40.0);
+    dvtn.ctrl.driveDistance(1.8_ft, 70.0);
+    intk.spin(-50);
+    pros::delay(800);
+    intk.spin(0);
+    mcroStack();
+    pros::delay(800);
+    mcroReverse();
+    dvtn.ctrl.moveArcade(0.0, 0.0);
+    break;
+  }
 }
 
 /**
- * Runs the operator control code. This function will be started in its own task
- * with the default priority and stack size whenever the robot is enabled via
- * the Field Management System or the VEX Competition Switch in the operator
- * control mode.
+ * Runs the operator control code. This function will be started in its own
+ * task with the default priority and stack size whenever the robot is enabled
+ * via the Field Management System or the VEX Competition Switch in the
+ * operator control mode.
  *
  * If no competition control is connected, this function will run immediately
  * following initialize().
  *
  * If the robot is disabled or communications is lost, the
- * operator control task will be stopped. Re-enabling the robot will restart the
- * task, not resume it from where it left off.
+ * operator control task will be stopped. Re-enabling the robot will restart
+ * the task, not resume it from where it left off.
  */
 void opcontrol() {
   pros::Task intkTask(intkControl);
