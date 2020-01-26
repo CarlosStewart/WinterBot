@@ -10,6 +10,28 @@ void mcroStack() {
   intk.setState(state_intk::coast);
 }
 
+void mcroStackAuton() {
+  tray.setTarget(heights_tray::vertical);
+  while (tray_pot.get() < (double)heights_tray::dropSpot)
+    pros::delay(20);
+  intk.stop(false);
+  intk.spin(-50);
+  pros::delay(900);
+  dvtn.ctrl.moveArcade(-50, 0.0);
+  pros::delay(2000);
+  dvtn.ctrl.moveArcade(0.0, 0.0);
+  intk.stop(true);
+}
+
+void mcroStackNoRev() {
+  tray.setTarget(heights_tray::vertical);
+  while (tray_pot.get() < (double)heights_tray::dropSpot)
+    pros::delay(20);
+  intk.stop(false);
+  intk.spin(-50);
+  pros::delay(900);
+}
+
 void mcroReverse() {
   // spins the intake out
   intk.setSpeed(-50.0);

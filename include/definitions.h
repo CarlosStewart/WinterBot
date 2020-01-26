@@ -3,6 +3,8 @@
 
 // functions
 void mcroStack();
+void mcroStackAuton();
+void mcroStackNoRev();
 void mcroReverse();
 void mcroGetRow();
 #define hfix(i)                                                                \
@@ -31,7 +33,7 @@ extern ADIEncoder dvtn_right_track;
 #define RIGHT_TRACK_DIST 2.56
 #define TRACK_DIAMETER 2.859824
 
-const int IL = 11;
+const int IL = 16;
 const int IR = -12;
 extern MotorGroup intk_motors;
 

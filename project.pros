@@ -251,8 +251,8 @@
         "upload_options": {
             "compress_bin": true,
             "description": "Created with PROS",
-            "remote_name": "5Red",
-            "slot": 1
+            "remote_name": "1Cube",
+            "slot": 2
         }
     }
 }

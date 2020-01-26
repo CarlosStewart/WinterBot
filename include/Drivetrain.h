@@ -30,7 +30,7 @@ public:
     const int straightSettledForCounts = 50;
 
     const double turnMaxSpeed = 200.0;
-    const double turnSuccessRange = 0.5; // degrees
+    const double turnSuccessRange = 1.0; // degrees
 
   public:
     // returns the current heading of the robot in degrees

@@ -204,7 +204,7 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-  int auton = 2;
+  int auton = 4;
   switch (auton) {
   case 1:
     // 9Red - gets 9 cubes
@@ -236,6 +236,86 @@ void autonomous() {
     mcroReverse();
     dvtn.ctrl.moveArcade(0.0, 0.0);
     break;
+  case 3:
+    // 6blue - stacks 5 cubes
+    intk.spin(-200);
+    lift.setTarget(100);
+    lift.waitForController();
+    lift.setTarget(0);
+    lift.waitForController();
+    intk.spin(200);
+    dvtn.ctrl.driveDistance(3_ft, 65.0);
+    dvtn.ctrl.turnToFace(-150_deg, 40.0);
+    dvtn.ctrl.driveDistance(1.9_ft, 70.0);
+    intk.spin(-200);
+    pros::delay(150);
+    intk.spin(0);
+    mcroStackAuton();
+    break;
+  case 4:
+    dvtn.ctrl.moveArcade(50.0, 0.0);
+    pros::delay(2000);
+    dvtn.ctrl.moveArcade(-50.0, 0.0);
+    pros::delay(3000);
+    dvtn.ctrl.moveArcade(0.0, 0.0);
+    break;
+  case 5:
+    // prgramming
+    intk.spin(-200);
+    lift.setTarget(100);
+    lift.waitForController();
+    lift.setTarget(0);
+    lift.waitForController();
+    intk.spin(200);
+    dvtn.ctrl.driveDistance(3_ft, 65.0);
+    dvtn.ctrl.driveDistance(-2.2_ft, 80.0);
+    dvtn.ctrl.turnToFace(75_deg, 50.0);
+    dvtn.ctrl.driveDistance(-2.4_ft, 50.0);
+    dvtn.ctrl.turnToFace(0_deg, 30.0);
+    dvtn.ctrl.driveDistance(3_ft, 45.0);
+    dvtn.ctrl.turnToFace(-160_deg, 40.0);
+    dvtn.ctrl.driveDistance(1.9_ft, 40.0);
+    dvtn.ctrl.turnToFace(-140_deg, 30.0);
+    dvtn.ctrl.driveDistance(5_in, 50.0);
+    intk.spin(125.0);
+    pros::delay(200);
+    intk.spin(0);
+    mcroStackNoRev();
+    dvtn.ctrl.driveDistance(-3.2_ft, 50.0);
+    dvtn.ctrl.turnToFace(0_deg, 50.0);
+    tray.setTarget(heights_tray::bottom);
+    intk.spin(200);
+    dvtn.ctrl.driveDistance(2.5_ft, 50.0);
+    pros::delay(2000);
+    intk.spin(-200);
+    pros::delay(150);
+    intk.spin(0);
+    dvtn.ctrl.driveDistance(-6_in, 50.0);
+    lift.setTarget(heights_lift::lowTower);
+    intk.spin(-200);
+    pros::delay(2000);
+    dvtn.ctrl.driveDistance(-3.2_ft, 50.0);
+    dvtn.ctrl.turnToFace(90_deg, 50.0);
+    dvtn.ctrl.driveDistance(2.8_ft, 50.0);
+    pros::delay(2000);
+    intk.spin(-200);
+    pros::delay(150);
+    intk.spin(0);
+    dvtn.ctrl.driveDistance(-6_in, 50.0);
+    lift.setTarget(heights_lift::midTower);
+    dvtn.ctrl.driveDistance(1_in, 50.0);
+    intk.spin(-200);
+    pros::delay(2000);
+  case 6:
+    lift.enable();
+    intk.spin(-200);
+    lift.setTarget(100);
+    lift.waitForController();
+    lift.setTarget(0);
+    lift.waitForController();
+    intk.spin(200);
+    dvtn.ctrl.driveDistance(3_ft, 65.0);
+    dvtn.ctrl.driveDistance(-2.2_ft, 80.0);
   }
 }
 
