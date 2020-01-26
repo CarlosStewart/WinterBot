@@ -48,43 +48,41 @@ void intkControl(void *) {
 void trayControl(void *) {
   ControllerButton btn_tray_up(BTN_TRAY_UP);
   ControllerButton btn_tray_down(BTN_TRAY_DOWN);
-  tray.setState(state_tray::rest);
+  tray.setState(state_tray::moveDown);
 
   while (true) {
     if (btn_tray_up.changedToPressed()) {
-      tray.setTarget(heights_tray::vertical);
-      tray.setState(state_tray::moveToTarget);
+      tray.setState(state_tray::moveUp);
     } else if (btn_tray_down.changedToPressed()) {
-      tray.setTarget(heights_tray::bottom);
-      tray.setState(state_tray::moveToTarget);
+      tray.setState(state_tray::moveDown);
     } else if (btn_tray_up.changedToReleased() ||
                btn_tray_down.changedToReleased()) {
-      tray.setState(state_tray::brake);
+      tray.setState(state_tray::hold);
     }
 
     switch (tray.getState()) {
+    case state_tray::moveUp:
+      tray.setTarget(heights_tray::forward);
+      tray.setState(state_tray::idle);
+      break;
+    case state_tray::moveDown:
+      tray.setTarget(heights_tray::rest);
+      tray.setState(state_tray::idle);
+      break;
+    case state_tray::stack:
+      tray.setTarget(heights_tray::vertical);
+      if (tray.isInSlowZone())
+        tray.limitSpeedTo(50.0);
+      break;
     case state_tray::hold:
-      tray.disable();
+      tray.setTarget(tray.getLocation());
       tray.setState(state_tray::idle);
-      break;
-    case state_tray::moveToTarget:
-      tray.enable();
-      tray.setState(state_tray::idle);
-      if (tray.reachedTarget())
-        tray.setState(state_tray::brake);
-      break;
-    case state_tray::brake:
-      tray.disable();
-      tray.brake();
-      tray.setState(state_tray::idle);
-      break;
-    case state_tray::rest:
-      tray.rest();
-      tray.setState(state_tray::idle);
-      break;
     case state_tray::idle:
       pros::delay(10);
     }
+
+    if (tray.getState() != state_tray::stack)
+      tray.limitSpeedTo(200.0);
 
     pros::delay(20);
   }
@@ -123,8 +121,6 @@ void liftControl(void *) {
       lift.setState(state_lift::idle);
       break;
     case state_lift::moveToTarget:
-      if (lift.getTarget() > 400)
-        tray.setTarget(heights_tray::lifted);
       lift.enable();
       lift.setState(state_lift::idle);
       break;
@@ -138,10 +134,6 @@ void liftControl(void *) {
       lift.setState(state_lift::idle);
       break;
     case state_lift::idle:
-      if (tray.getTarget() == (double)heights_tray::lifted &&
-          lift.getTarget() == (double)heights_lift::bottom) {
-        tray.setTarget(heights_tray::bottom);
-      }
       pros::delay(10);
       break;
     }
@@ -172,7 +164,13 @@ void mcroControl(void *) {
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
-void initialize() { pros::lcd::initialize(); }
+void initialize() {
+  pros::lcd::initialize();
+  while (tray_pot.get() > (double)heights_tray::potBottom)
+    tray.setTarget(-100.0);
+  tray.setBottom();
+  tray.setTarget(heights_tray::rest);
+}
 
 /**
  * Runs while the robot is in the disabled state of Field Management System or
