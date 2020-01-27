@@ -69,12 +69,12 @@ enum class heights_lift {
   top = 3540
 };
 enum class heights_tray {
-  potBottom = 12,
+  potBottom = 150,
   bottom = 0,
-  rest = -300,
-  slowZone = -1700,
-  vertical = -2500,
-  forward = -3540
+  rest = 300,
+  slowZone = 1700,
+  vertical = 2475,
+  forward = 2850
 };
 
 // includes

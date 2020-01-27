@@ -37,6 +37,10 @@ bool Tray::isInSlowZone() {
 void Tray::limitSpeedTo(double tMaxSpeed) {
   controllerTray.setMaxVelocity(tMaxSpeed);
 }
+// returns whether or not the controller has settled
+bool Tray::controllerSettled() { return controllerTray.isSettled(); }
+// stops the thread until the controller has settled
+void Tray::pauseUntilSettled() { controllerTray.waitUntilSettled(); }
 
 // state Control
 // sets the state

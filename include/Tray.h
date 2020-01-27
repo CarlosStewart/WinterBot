@@ -28,6 +28,10 @@ public:
   bool isInSlowZone();
   // sets the maximum speed of the controller
   void limitSpeedTo(double tMaxSpeed);
+  // returns whether or not the controller has settled
+  bool controllerSettled();
+  // stops the thread until the controller has settled
+  void pauseUntilSettled();
 
   // state Control
   // sets the state

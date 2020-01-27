@@ -22,6 +22,8 @@ void intkControl(void *) {
     } else if (btn_intk_in.changedToReleased() ||
                btn_intk_out.changedToReleased()) {
       intk.setState(state_intk::hold);
+    } else if (tray.isInSlowZone()) {
+      intk.setState(state_intk::coast);
     }
 
     switch (intk.getState()) {
@@ -148,8 +150,6 @@ void mcroControl(void *) {
   while (true) {
     if (btn_mcro_stack.changedToPressed()) {
       mcroStack();
-      pros::delay(1000);
-      mcroReverse();
     } else if (btn_mcro_reverse.changedToPressed()) {
       mcroReverse();
     }
@@ -166,8 +166,8 @@ void mcroControl(void *) {
  */
 void initialize() {
   pros::lcd::initialize();
-  while (tray_pot.get() > (double)heights_tray::potBottom)
-    tray.setTarget(-100.0);
+  tray.setTarget(-1000.0);
+  pros::delay(1500);
   tray.setBottom();
   tray.setTarget(heights_tray::rest);
 }
