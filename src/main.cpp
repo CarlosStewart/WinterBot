@@ -22,8 +22,6 @@ void intkControl(void *) {
     } else if (btn_intk_in.changedToReleased() ||
                btn_intk_out.changedToReleased()) {
       intk.setState(state_intk::hold);
-    } else if (tray.isInSlowZone()) {
-      intk.setState(state_intk::coast);
     }
 
     switch (intk.getState()) {
@@ -64,10 +62,12 @@ void trayControl(void *) {
 
     switch (tray.getState()) {
     case state_tray::moveUp:
+      tray.limitSpeedTo(200.0);
       tray.setTarget(heights_tray::forward);
       tray.setState(state_tray::idle);
       break;
     case state_tray::moveDown:
+      tray.limitSpeedTo(200.0);
       tray.setTarget(heights_tray::rest);
       tray.setState(state_tray::idle);
       break;
@@ -84,9 +84,8 @@ void trayControl(void *) {
     }
 
     if (tray.getState() != state_tray::stack)
-      tray.limitSpeedTo(200.0);
 
-    pros::delay(20);
+      pros::delay(20);
   }
 }
 
@@ -165,11 +164,15 @@ void mcroControl(void *) {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
+  tray.disable();
   pros::lcd::initialize();
-  tray.setTarget(-1000.0);
-  pros::delay(1500);
+  tray_motor.moveVelocity(-200);
+  do {
+    pros::delay(200);
+  } while (tray_motor.getActualVelocity() != 0);
   tray.setBottom();
   tray.setTarget(heights_tray::rest);
+  tray.enable();
 }
 
 /**

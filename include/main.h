@@ -72,9 +72,9 @@ enum class heights_tray {
   potBottom = 150,
   bottom = 0,
   rest = 300,
-  slowZone = 1700,
+  slowZone = 2000,
   vertical = 2475,
-  forward = 2850
+  forward = 2950
 };
 
 // includes
