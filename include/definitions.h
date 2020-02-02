@@ -34,7 +34,7 @@ extern ADIEncoder dvtn_right_track;
 #define TRACK_DIAMETER 2.859824
 
 const int IL = 16;
-const int IR = -12;
+const int IR = -9;
 extern MotorGroup intk_motors;
 
 const int TRAY = -5;
@@ -67,13 +67,13 @@ extern Potentiometer tray_pot;
 #define BTN_INTK_IN ControllerDigital::R1
 #define BTN_INTK_OUT ControllerDigital::R2
 
-#define BTN_TRAY_UP ControllerDigital::L1
-#define BTN_TRAY_DOWN ControllerDigital::L2
+#define BTN_TRAY_UP ControllerDigital::up
+#define BTN_TRAY_DOWN ControllerDigital::down
 
-#define BTN_LIFT_UP ControllerDigital::X
-#define BTN_LIFT_DOWN ControllerDigital::B
+#define BTN_LIFT_UP ControllerDigital::L1
+#define BTN_LIFT_DOWN ControllerDigital::L2
 #define BTN_LIFT_TOWER_LOW ControllerDigital::left
 #define BTN_LIFT_TOWER_MID ControllerDigital::right
 
-#define BTN_MCRO_STACK ControllerDigital::up
-#define BTN_MCRO_REVERSE ControllerDigital::down
+#define BTN_MCRO_STACK ControllerDigital::X
+#define BTN_MCRO_REVERSE ControllerDigital::B

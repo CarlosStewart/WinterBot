@@ -71,6 +71,11 @@ void trayControl(void *) {
       tray.setTarget(heights_tray::rest);
       tray.setState(state_tray::idle);
       break;
+    case state_tray::lift:
+      tray.limitSpeedTo(200.0);
+      tray.setTarget(heights_tray::lifted);
+      tray.setState(state_tray::idle);
+      break;
     case state_tray::stack:
       tray.setTarget(heights_tray::vertical);
       if (tray.isInSlowZone())
@@ -79,13 +84,13 @@ void trayControl(void *) {
     case state_tray::hold:
       tray.setTarget(tray.getLocation());
       tray.setState(state_tray::idle);
+      break;
     case state_tray::idle:
       pros::delay(10);
+      break;
     }
 
-    if (tray.getState() != state_tray::stack)
-
-      pros::delay(20);
+    pros::delay(20);
   }
 }
 
@@ -114,6 +119,14 @@ void liftControl(void *) {
                btn_lift_tower_low.changedToReleased() ||
                btn_lift_tower_mid.changedToReleased()) {
       lift.setState(state_lift::brake);
+    }
+    // this section is to automatically raise the tray when the arms go up
+    else if (
+             lift.getLocation() > (double)heights_lift::raisedThreshold) {
+      tray.setState(state_tray::lift);
+    } else if (btn_lift_down.isPressed() &&
+               lift.getLocation() < (double)heights_lift::raisedThreshold) {
+      tray.setState(state_tray::moveDown);
     }
 
     switch (lift.getState()) {

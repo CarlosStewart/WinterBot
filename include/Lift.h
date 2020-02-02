@@ -25,6 +25,8 @@ public:
   void setTarget(double tHeight);
   // returns the target height of the controller
   double getTarget();
+  // returns the current location of the controller
+  double getLocation();
   // makes the lift stop as soon as possible without jerking
   void brake();
 

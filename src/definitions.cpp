@@ -3,8 +3,12 @@
 void mcroStack() {
   // moves the tray to vertical
   tray.setState(state_tray::stack);
-  tray.pauseUntilSettled();
+  intk.setSpeed(-20.0);
+  intk.setState(state_intk::precise);
+  while (tray.getLocation() < (double)heights_tray::slowZone)
+    pros::delay(20);
   intk.setState(state_intk::coast);
+  tray.pauseUntilSettled();
   pros::delay(500);
   // spins the intake out
   intk.setSpeed(-50.0);
