@@ -4,29 +4,34 @@
 class Tray {
   state_tray state;
   state_tray lastState;
-  double settledRange;
   const double brakeVelRange = 20.0;
 
 public:
   // "default" constructor
-  Tray(double tSettledRange);
+  Tray();
 
   // enables the controller
   void enable();
   // disables the controller
   void disable();
 
-  // turns off the controller, and sets the brakeMode to coast
-  void rest();
+  // sets the controller to 0
+  void setBottom();
   // sets the target height of the controller
   void setTarget(heights_tray tHeight);
   void setTarget(double tHeight);
   // returns the target height of the tray
   double getTarget();
-  // makes the tray stop as soon as possible without jerking
-  void brake();
-  // returns wheather the tray has reached its target
-  bool reachedTarget();
+  // returns the current location of the controller
+  double getLocation();
+  // returns whether or not the tray should be going slow
+  bool isInSlowZone();
+  // sets the maximum speed of the controller
+  void limitSpeedTo(double tMaxSpeed);
+  // returns whether or not the controller has settled
+  bool controllerSettled();
+  // stops the thread until the controller has settled
+  void pauseUntilSettled();
 
   // state Control
   // sets the state

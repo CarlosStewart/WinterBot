@@ -1,50 +1,46 @@
 #include "main.h"
 
 Motor tray_motor(TRAY);
-Potentiometer tray_pot(PT);// 0.009, 0.0, 0.0002
-auto controllerTray =
-    AsyncControllerFactory::posPID(tray_motor, tray_pot, 0.007, 0.0, 0.00015);
+Potentiometer tray_pot(PT);
+auto controllerTray = AsyncControllerFactory::posIntegrated(tray_motor, 200);
 
 // default constructor
-Tray::Tray(double tSettledRange) {
-  settledRange = tSettledRange;
-  tray_motor.setBrakeMode(AbstractMotor::brakeMode::hold);
-}
+Tray::Tray() { disable(); }
 
 // enables the controller
 void Tray::enable() { controllerTray.flipDisable(false); }
 // disables the controller
 void Tray::disable() { controllerTray.flipDisable(true); }
 
-// moves the tray to the lowest availible position
-void Tray::rest() {
-  disable();
-  tray_motor.setBrakeMode(AbstractMotor::brakeMode::coast);
-}
-
+// sets the controller to 0
+void Tray::setBottom() { controllerTray.tarePosition(); }
 // sets the targetHeight
 void Tray::setTarget(heights_tray tHeight) {
+  enable();
   controllerTray.setTarget((double)tHeight);
 }
-void Tray::setTarget(double tHeight) { controllerTray.setTarget(tHeight); }
+void Tray::setTarget(double tHeight) {
+  enable();
+  controllerTray.setTarget(tHeight);
+}
 // returns the target height of the tray
-double Tray::getTarget(){
-  return controllerTray.getTarget();
+double Tray::getTarget() { return controllerTray.getTarget(); }
+// returns the current location of the controller
+double Tray::getLocation() {
+  return controllerTray.getTarget() - controllerTray.getError();
 }
-// makes the tray stop as soon as possible without jerking
-void Tray::brake() {
-  tray_motor.setBrakeMode(AbstractMotor::brakeMode::coast);
-  tray_motor.moveVelocity(0.0);
-  while (tray_motor.getActualVelocity() >= brakeVelRange ||
-         tray_motor.getActualVelocity() <= -brakeVelRange) {
-    pros::delay(50);
-  }
-  tray_motor.setBrakeMode(AbstractMotor::brakeMode::hold);
+// returns whether or not the tray should be going slow
+bool Tray::isInSlowZone() {
+  return getLocation() > (double)heights_tray::slowZone;
 }
-// returns wheather the tray has reached its target
-bool Tray::reachedTarget() {
-  return abs(controllerTray.getTarget() - tray_pot.get()) <= settledRange;
+// sets the maximum speed of the controller
+void Tray::limitSpeedTo(double tMaxSpeed) {
+  controllerTray.setMaxVelocity(tMaxSpeed);
 }
+// returns whether or not the controller has settled
+bool Tray::controllerSettled() { return controllerTray.isSettled(); }
+// stops the thread until the controller has settled
+void Tray::pauseUntilSettled() { controllerTray.waitUntilSettled(); }
 
 // state Control
 // sets the state
@@ -52,4 +48,4 @@ void Tray::setState(state_tray tState) { state = tState; }
 // returns the state
 state_tray Tray::getState() { return state; }
 
-Tray tray(true);
+Tray tray;

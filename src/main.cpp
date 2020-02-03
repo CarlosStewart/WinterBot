@@ -163,7 +163,7 @@ void mcroControl(void *) {
     if (btn_mcro_stack.changedToPressed()) {
       mcroStack();
     } else if (btn_mcro_reverse.changedToPressed()) {
-      mcroReverse();
+      aLineSensor();
     }
 
     pros::delay(50);
@@ -362,11 +362,7 @@ void opcontrol() {
         dvtn.setState(state_dvtn::plain);
     }
 
-    double test = dvtn_left_track.get();
-
-    pros::lcd::print(0, "heading: %f", dvtn.ctrl.getHeading());
-    pros::lcd::print(1, "right encoder: %f",
-                     dvtn_right_track.get() / 360 * (TRACK_DIAMETER * pi));
+    pros::lcd::print(1, "line_follower val: %f", line_follower.get());
 
     switch (dvtn.getState()) {
     case state_dvtn::plain:

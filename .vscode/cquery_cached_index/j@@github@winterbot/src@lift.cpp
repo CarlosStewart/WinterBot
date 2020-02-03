@@ -15,6 +15,8 @@ Lift::Lift(bool tBrakeModeHold) {
 void Lift::enable() { controllerLift.flipDisable(false); }
 // disables the controller
 void Lift::disable() { controllerLift.flipDisable(true); }
+// waits until the controller has reached its target
+void Lift::waitForController() { controllerLift.waitUntilSettled(); }
 // returns wheather or not it is disabled
 int Lift::isDisabled() {
   if (controllerLift.isDisabled())
@@ -34,12 +36,14 @@ void Lift::setTarget(heights_lift tHeight) {
 }
 void Lift::setTarget(double tHeight) { controllerLift.setTarget(tHeight); }
 // returns the target height of the controller
-double Lift::getTarget(){
-  return controllerLift.getTarget();
+double Lift::getTarget() { return controllerLift.getTarget(); }
+// returns the current location of the controller
+double Lift::getLocation() {
+  return controllerLift.getTarget() - controllerLift.getError();
 }
 // makes the lift stop as soon as possible without jerking
 void Lift::brake() {
-  lift_motor.setBrakeMode(AbstractMotor::brakeMode::coast);
+  lift_motor.setBrakeMode(AbstractMotor::brakeMode::brake);
   lift_motor.moveVelocity(0.0);
   while (lift_motor.getActualVelocity() >= brakeVelRange ||
          lift_motor.getActualVelocity() <= -brakeVelRange) {
