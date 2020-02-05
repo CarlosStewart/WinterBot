@@ -30,6 +30,8 @@ public:
   void limitSpeedTo(double tMaxSpeed);
   // returns whether or not the controller has settled
   bool controllerSettled();
+  // returns the error of the controller
+  double controllerGetError();
   // stops the thread until the controller has settled
   void pauseUntilSettled();
 

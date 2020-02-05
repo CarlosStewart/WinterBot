@@ -2,6 +2,7 @@
 #include "main.h"
 
 // functions
+void deploy();
 void aLineSensor();
 void mcroStack();
 void mcroStackAuton();

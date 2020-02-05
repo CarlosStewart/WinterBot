@@ -79,7 +79,7 @@ void trayControl(void *) {
     case state_tray::stack:
       tray.setTarget(heights_tray::vertical);
       if (tray.isInSlowZone())
-        tray.limitSpeedTo(50.0);
+        tray.limitSpeedTo(100);
       break;
     case state_tray::hold:
       tray.setTarget(tray.getLocation());
@@ -218,7 +218,7 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-  int auton = 4;
+  int auton = 7;
   switch (auton) {
   case 1:
     // 9Red - gets 9 cubes
@@ -320,6 +320,7 @@ void autonomous() {
     dvtn.ctrl.driveDistance(1_in, 50.0);
     intk.spin(-200);
     pros::delay(2000);
+    break;
   case 6:
     lift.enable();
     intk.spin(-200);
@@ -330,6 +331,10 @@ void autonomous() {
     intk.spin(200);
     dvtn.ctrl.driveDistance(3_ft, 65.0);
     dvtn.ctrl.driveDistance(-2.2_ft, 80.0);
+  case 7:
+    // stacks a bunch in the protected zone
+    deploy();
+    break;
   }
 }
 

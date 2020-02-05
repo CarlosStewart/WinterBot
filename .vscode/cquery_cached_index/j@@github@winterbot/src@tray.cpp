@@ -39,6 +39,10 @@ void Tray::limitSpeedTo(double tMaxSpeed) {
 }
 // returns whether or not the controller has settled
 bool Tray::controllerSettled() { return controllerTray.isSettled(); }
+// returns the error of the controller
+double Tray::controllerGetError(){
+  return controllerTray.getError();
+}
 // stops the thread until the controller has settled
 void Tray::pauseUntilSettled() { controllerTray.waitUntilSettled(); }
 
