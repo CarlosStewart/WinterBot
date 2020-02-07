@@ -5,6 +5,7 @@ class Intake {
   state_intk state;
   const double fullSpeed = 200.0;
   double speed;
+  double lineFollowerStartingVal;
 
 public:
   // constructors
@@ -34,6 +35,11 @@ public:
   void setSpeed(double tSpeed);
   // returns the speed
   double getSpeed();
+
+  // sets the starting value for the line follower, to detect changes
+  void setLineVal(double tLineFollowerStartingVal);
+  // returns the current value of the line follower
+  double getLineVal();
 
   // state control
   // sets the state

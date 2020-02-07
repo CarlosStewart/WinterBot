@@ -77,9 +77,9 @@ void trayControl(void *) {
       tray.setState(state_tray::idle);
       break;
     case state_tray::stack:
-      tray.setTarget(heights_tray::vertical);
+      tray.setTarget((double)heights_tray::vertical + 50);
       if (tray.isInSlowZone())
-        tray.limitSpeedTo(50.0);
+        tray.limitSpeedTo(100);
       break;
     case state_tray::hold:
       tray.setTarget(tray.getLocation());
@@ -121,8 +121,7 @@ void liftControl(void *) {
       lift.setState(state_lift::brake);
     }
     // this section is to automatically raise the tray when the arms go up
-    else if (
-             lift.getLocation() > (double)heights_lift::raisedThreshold) {
+    else if (lift.getLocation() > (double)heights_lift::raisedThreshold) {
       tray.setState(state_tray::lift);
     } else if (btn_lift_down.isPressed() &&
                lift.getLocation() < (double)heights_lift::raisedThreshold) {
@@ -163,7 +162,7 @@ void mcroControl(void *) {
     if (btn_mcro_stack.changedToPressed()) {
       mcroStack();
     } else if (btn_mcro_reverse.changedToPressed()) {
-      mcroReverse();
+      aLineSensor();
     }
 
     pros::delay(50);
@@ -177,6 +176,7 @@ void mcroControl(void *) {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
+  line_follower.get();
   tray.disable();
   pros::lcd::initialize();
   tray_motor.moveVelocity(-200);
@@ -186,6 +186,7 @@ void initialize() {
   tray.setBottom();
   tray.setTarget(heights_tray::rest);
   tray.enable();
+  intk.setLineVal(line_follower.get());
 }
 
 /**
@@ -218,7 +219,7 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-  int auton = 4;
+  int auton = 7;
   switch (auton) {
   case 1:
     // 9Red - gets 9 cubes
@@ -320,6 +321,7 @@ void autonomous() {
     dvtn.ctrl.driveDistance(1_in, 50.0);
     intk.spin(-200);
     pros::delay(2000);
+    break;
   case 6:
     lift.enable();
     intk.spin(-200);
@@ -330,6 +332,10 @@ void autonomous() {
     intk.spin(200);
     dvtn.ctrl.driveDistance(3_ft, 65.0);
     dvtn.ctrl.driveDistance(-2.2_ft, 80.0);
+  case 7:
+    // stacks a bunch in the protected zone
+    deploy();
+    break;
   }
 }
 
@@ -362,11 +368,7 @@ void opcontrol() {
         dvtn.setState(state_dvtn::plain);
     }
 
-    double test = dvtn_left_track.get();
-
-    pros::lcd::print(0, "heading: %f", dvtn.ctrl.getHeading());
-    pros::lcd::print(1, "right encoder: %f",
-                     dvtn_right_track.get() / 360 * (TRACK_DIAMETER * pi));
+    pros::lcd::print(1, "line_follower val: %f", line_follower.get());
 
     switch (dvtn.getState()) {
     case state_dvtn::plain:

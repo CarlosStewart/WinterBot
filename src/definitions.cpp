@@ -1,29 +1,30 @@
 #include "main.h"
 
-void deploy(){
+void deploy() {
   lift.setTarget(200);
   lift.waitForController();
   intk.spinOut();
 }
 
-void aLineSensor(){
-  while(line_follower.get() > 2500){
+void aLineSensor() {
+  while (line_follower.get() > intk.getLineVal() - 100) {
     intk.setSpeed(-100.0);
     intk.setState(state_intk::precise);
   }
   pros::delay(100);
   intk.setState(state_intk::hold);
-
 }
 
 void mcroStack() {
-  aLineSensor();
   // moves the tray to vertical
   tray.setState(state_tray::stack);
+  intk.setSpeed(-20.0);
+  intk.setState(state_intk::precise);
   while (tray.getLocation() < (double)heights_tray::slowZone)
     pros::delay(20);
+  intk.setState(state_intk::coast);
   tray.pauseUntilSettled();
-  pros::delay(500);
+  // pros::delay(500);
   // spins the intake out
   intk.setSpeed(-50.0);
   intk.setState(state_intk::precise);

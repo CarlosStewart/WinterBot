@@ -2,6 +2,8 @@
 #include "main.h"
 
 // functions
+void deploy();
+void aLineSensor();
 void mcroStack();
 void mcroStackAuton();
 void mcroStackNoRev();
@@ -59,6 +61,9 @@ const bool TS_REV = false;
 
 const char PT = 'A';
 extern Potentiometer tray_pot;
+
+const char LF = 'H';
+extern Potentiometer line_follower;
 
 // buttons
 #define BTN_DVTN_TGL_SLEW ControllerDigital::A

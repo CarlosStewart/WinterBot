@@ -1,5 +1,20 @@
 #include "main.h"
 
+void deploy() {
+  lift.setTarget(200);
+  lift.waitForController();
+  intk.spinOut();
+}
+
+void aLineSensor() {
+  while (line_follower.get() > intk.getLineVal() - 100) {
+    intk.setSpeed(-100.0);
+    intk.setState(state_intk::precise);
+  }
+  pros::delay(100);
+  intk.setState(state_intk::hold);
+}
+
 void mcroStack() {
   // moves the tray to vertical
   tray.setState(state_tray::stack);
@@ -9,12 +24,12 @@ void mcroStack() {
     pros::delay(20);
   intk.setState(state_intk::coast);
   tray.pauseUntilSettled();
-  pros::delay(500);
+  // pros::delay(500);
   // spins the intake out
   intk.setSpeed(-50.0);
   intk.setState(state_intk::precise);
   // backs up the drivetrain
-  pros::delay(100);
+  pros::delay(400);
   dvtn.setState(state_dvtn::idle);
   dvtn.ctrl.moveArcade(-50.0, 0.0);
   // continues backing up for a bit, then lowers the tray
@@ -68,3 +83,5 @@ void mcroGetRow() {
   pros::delay(3000);
   dvtn.setState(state_dvtn::plain);
 }
+
+Potentiometer line_follower(LF);

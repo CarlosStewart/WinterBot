@@ -50,6 +50,13 @@ void Intake::setSpeed(double tSpeed) { speed = tSpeed; }
 // returns the speed
 double Intake::getSpeed() { return speed; }
 
+// sets the starting value for the line follower, to detect changes
+void Intake::setLineVal(double tLineFollowerStartingVal) {
+  lineFollowerStartingVal = tLineFollowerStartingVal;
+}
+// returns the current value of the line follower
+double Intake::getLineVal() { return lineFollowerStartingVal; }
+
 // state control
 // sets the state
 void Intake::setState(state_intk tState) { state = tState; }

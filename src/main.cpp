@@ -77,7 +77,7 @@ void trayControl(void *) {
       tray.setState(state_tray::idle);
       break;
     case state_tray::stack:
-      tray.setTarget(heights_tray::vertical);
+      tray.setTarget((double)heights_tray::vertical + 50);
       if (tray.isInSlowZone())
         tray.limitSpeedTo(100);
       break;
@@ -121,8 +121,7 @@ void liftControl(void *) {
       lift.setState(state_lift::brake);
     }
     // this section is to automatically raise the tray when the arms go up
-    else if (
-             lift.getLocation() > (double)heights_lift::raisedThreshold) {
+    else if (lift.getLocation() > (double)heights_lift::raisedThreshold) {
       tray.setState(state_tray::lift);
     } else if (btn_lift_down.isPressed() &&
                lift.getLocation() < (double)heights_lift::raisedThreshold) {
@@ -177,6 +176,7 @@ void mcroControl(void *) {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
+  line_follower.get();
   tray.disable();
   pros::lcd::initialize();
   tray_motor.moveVelocity(-200);
@@ -186,6 +186,7 @@ void initialize() {
   tray.setBottom();
   tray.setTarget(heights_tray::rest);
   tray.enable();
+  intk.setLineVal(line_follower.get());
 }
 
 /**
