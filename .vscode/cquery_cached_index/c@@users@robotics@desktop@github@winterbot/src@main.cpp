@@ -160,9 +160,9 @@ void mcroControl(void *) {
 
   while (true) {
     if (btn_mcro_stack.changedToPressed()) {
-      mcroStack();
+      mcroStack(false);
     } else if (btn_mcro_reverse.changedToPressed()) {
-      aLineSensor();
+      mcroStack(true);
     }
 
     pros::delay(50);
@@ -246,7 +246,7 @@ void autonomous() {
     intk.spin(-50);
     pros::delay(800);
     intk.spin(0);
-    mcroStack();
+    mcroStack(false);
     pros::delay(800);
     mcroReverse();
     dvtn.ctrl.moveArcade(0.0, 0.0);

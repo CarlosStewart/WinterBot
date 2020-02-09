@@ -20,8 +20,11 @@ Drivetrain::Drivetrain(double tSlewIncrement) {
 void Drivetrain::updateArcade(double tForwardVel, double tTurnVel,
                               bool tSlewOn) {
 
-  tForwardVel *= abs(pow(tForwardVel, 3)) / pow(200, 3);
-  tTurnVel *= abs(pow(tTurnVel, 3)) / pow(200, 3);
+  tForwardVel = adjustControl(tForwardVel, 2.0, 50.0, 200.0);
+  tTurnVel = adjustControl(tTurnVel, 2.0, 20.0, 200.0);
+
+  pros::lcd::print(5, "forward: %f", tForwardVel);
+  pros::lcd::print(6, "turn: %f", tTurnVel);
 
   if (tSlewOn) {
     // update target forward velocity

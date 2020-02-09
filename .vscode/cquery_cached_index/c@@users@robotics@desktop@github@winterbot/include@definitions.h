@@ -3,12 +3,13 @@
 
 // functions
 void deploy();
-void aLineSensor();
-void mcroStack();
+void mcroStack(bool ten);
 void mcroStackAuton();
 void mcroStackNoRev();
 void mcroReverse();
 void mcroGetRow();
+double adjustControl(double tInput, double tStrength, double tMin, double tMax);
+double adjustControl(double tInput, double tStrength);
 #define hfix(i)                                                                \
   fmod(i, 360) < 0 ? fmod(i, 360) + 360 : fmod(i, 360) == -0 ? 0 : fmod(i, 360)
 
