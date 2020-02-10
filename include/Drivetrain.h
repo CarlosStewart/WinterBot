@@ -1,6 +1,7 @@
 #ifndef Drivetrain_H
 #define Drivetrain_H
 #include "main.h"
+
 class Drivetrain {
   state_dvtn state;
   double slewIncrement;
@@ -32,6 +33,9 @@ public:
     const double turnMaxSpeed = 200.0;
     const double turnSuccessRange = 1.0; // degrees
 
+    QLength rightArcLength;
+    QLength leftArcLength;
+
   public:
     // returns the current heading of the robot in degrees
     double getHeading();
@@ -42,6 +46,37 @@ public:
     void moveTank(double tRPMLeft, double tRPMRight);
     // sets the speed to 0
     void stop();
+
+    void calcArcDistances(QLength tChordLength, QAngle tAngle) {
+      QLength radius;
+      if (tAngle < 0_deg) {
+        tAngle += 360_deg;
+      }
+      if (tAngle > 0_deg && tAngle < 90_deg) {
+        radius = tChordLength / (2 * sin(tAngle.convert(radian) / 2));
+        rightArcLength = 2 * (radius + RIGHT_TRACK_DIST * inch) *
+                         sin(tAngle.convert(radian) / 2);
+        leftArcLength = 2 * (radius - LEFT_TRACK_DIST * inch) *
+                        sin(tAngle.convert(radian) / 2);
+      } else if (angle > 90 && angle < 180) {
+        theta = M_PI / 2 - ((180 - angle) * M_PI / 180);
+        double leftTarget =
+            chordLength * theta / (2 * sin(theta / 2)) - offsetL;
+        double rightTarget = leftTarget + (theta * (offsetL + offsetR));
+      } else if (angle > 180 && angle < 270) {
+        theta = M_PI / 2 - ((angle - 180) * M_PI / 180);
+        double leftTarget =
+            -1 * (chordLength * theta / (2 * sin(theta / 2)) - offsetL);
+        double rightTarget = leftTarget - (theta * (offsetL + offsetR));
+      } else {
+        theta = M_PI / 2 - ((360 - angle) * M_PI / 180);
+        double rightTarget =
+            -1 * (chordLength * theta / (2 * sin(theta / 2)) - offsetR);
+        double leftTarget = leftTarget - (theta * (offsetL + offsetR));
+      }
+      somePIDfunction(leftTarget, rightTarget);
+    }
+
     // move the drivetrain to a specific orientation (field centric)
     void turnToFace(QAngle tAngle, double tMaxSpeed);
     void turnToFace(QAngle tAngle);

@@ -219,14 +219,14 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-  int auton = 7;
+  enum autons { uRed9, uRed5, uBlue5, oneCube, progSkills, testing };
+  autons auton = uRed9;
   switch (auton) {
-  case 1:
+  case uRed9:
     // 9Red - gets 9 cubes
-    intk.spin(-200);
-    pros::delay(800);
+    deploy();
     intk.spin(200);
-    dvtn.ctrl.driveDistance(3_ft, 65.0);
+    dvtn.ctrl.driveDistance(3_ft, 100.0);
     dvtn.ctrl.turnToFace(-35_deg, 30.0);
     dvtn.ctrl.driveDistance(-3.3_ft);
     dvtn.ctrl.turnToFace(0_deg, 30.0);
@@ -234,8 +234,9 @@ void autonomous() {
     dvtn.ctrl.turnToFace(-15_deg, 40.0);
     dvtn.ctrl.driveDistance(1_ft, 30.0);
     dvtn.ctrl.driveDistance(-2_ft, 100.0);
+    dvtn.ctrl.turnToFace(150_deg);
     break;
-  case 2:
+  case uRed5:
     // 5Red - stacks 5 cubes
     intk.spin(-200);
     pros::delay(800);
@@ -251,8 +252,8 @@ void autonomous() {
     mcroReverse();
     dvtn.ctrl.moveArcade(0.0, 0.0);
     break;
-  case 3:
-    // 6blue - stacks 5 cubes
+  case uBlue5:
+    // 5blue - stacks 5 cubes
     intk.spin(-200);
     lift.setTarget(100);
     lift.waitForController();
@@ -267,14 +268,15 @@ void autonomous() {
     intk.spin(0);
     mcroStackAuton();
     break;
-  case 4:
+  case oneCube:
     dvtn.ctrl.moveArcade(50.0, 0.0);
     pros::delay(2000);
     dvtn.ctrl.moveArcade(-50.0, 0.0);
     pros::delay(3000);
     dvtn.ctrl.moveArcade(0.0, 0.0);
+    deploy();
     break;
-  case 5:
+  case progSkills:
     // prgramming
     intk.spin(-200);
     lift.setTarget(100);
@@ -322,19 +324,10 @@ void autonomous() {
     intk.spin(-200);
     pros::delay(2000);
     break;
-  case 6:
-    lift.enable();
-    intk.spin(-200);
-    lift.setTarget(100);
-    lift.waitForController();
-    lift.setTarget(0);
-    lift.waitForController();
-    intk.spin(200);
-    dvtn.ctrl.driveDistance(3_ft, 65.0);
-    dvtn.ctrl.driveDistance(-2.2_ft, 80.0);
-  case 7:
+  case testing:
     // stacks a bunch in the protected zone
     deploy();
+
     break;
   }
 }
