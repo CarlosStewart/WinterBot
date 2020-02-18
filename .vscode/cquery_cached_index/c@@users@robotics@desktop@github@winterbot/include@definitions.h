@@ -4,7 +4,7 @@
 // functions
 void deploy();
 void mcroStack(bool ten);
-void mcroStackAuton();
+void mcroStackAuton(void *);
 void mcroStackNoRev();
 void mcroReverse();
 void mcroGetRow();

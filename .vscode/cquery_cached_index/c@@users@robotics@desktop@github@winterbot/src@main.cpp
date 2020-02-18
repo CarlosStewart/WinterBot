@@ -219,39 +219,45 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-  int auton = 7;
+  enum autons { blueSmall9, redSmall9, blueBig, redBig4, progSkills, oneCube };
+  autons auton = redBig4;
+  pros::Task intkTask(intkControl);
+  pros::Task trayTask(trayControl);
   switch (auton) {
-  case 1:
+  case blueSmall9:
     // 9Red - gets 9 cubes
-    intk.spin(-200);
-    pros::delay(800);
-    intk.spin(200);
-    dvtn.ctrl.driveDistance(3_ft, 65.0);
-    dvtn.ctrl.turnToFace(-35_deg, 30.0);
-    dvtn.ctrl.driveDistance(-3.3_ft);
-    dvtn.ctrl.turnToFace(0_deg, 30.0);
-    dvtn.ctrl.driveDistance(3_ft, 45.0);
-    dvtn.ctrl.turnToFace(-15_deg, 40.0);
-    dvtn.ctrl.driveDistance(1_ft, 30.0);
-    dvtn.ctrl.driveDistance(-2_ft, 100.0);
+    deploy();
+    intk.setState(state_intk::in);
+    dvtn.ctrl.driveDistance(2.8_ft, 115.0);
+    dvtn.ctrl.turnToFace(29_deg, 100.0);
+    dvtn_left_motors.moveVelocity(-200.0);
+    dvtn_right_motors.moveVelocity(-200.0);
+    pros::delay(500);
+    while (true) {
+      if (dvtn_left_motors.getActualVelocity() == 0)
+        break;
+    }
+    dvtn_left_motors.moveVelocity(0.0);
+    dvtn_right_motors.moveVelocity(0.0);
+    dvtn.ctrl.driveDistance(3.4_ft, 80.0);
+    dvtn.ctrl.driveDistance(-1.8_ft);
+    dvtn.ctrl.turnToFace(-127_deg, 15.0);
+    { pros::Task stackTask(mcroStackAuton); }
+    dvtn.ctrl.driveDistance(9_in, 35.0);
+    // dvtn.ctrl.driveDistance(-12_in, 200.0);
+    break;
+  case redBig4:
+    // 5Red - stacks 5 cubes
+    deploy();
+    intk.setState(state_intk::in);
+    dvtn.ctrl.driveDistance(19_in, 50.0);
+    dvtn.ctrl.turnToFace(-100_deg, 30.0);
+    dvtn.ctrl.driveDistance(20_in, 50.0);
+    dvtn.ctrl.turnToFace(-160_deg, 30.0);
+    dvtn.ctrl.driveDistance(12_in, 50.0);
+    mcroStack(false);
     break;
   case 2:
-    // 5Red - stacks 5 cubes
-    intk.spin(-200);
-    pros::delay(800);
-    intk.spin(200);
-    dvtn.ctrl.driveDistance(3_ft, 65.0);
-    dvtn.ctrl.turnToFace(150_deg, 40.0);
-    dvtn.ctrl.driveDistance(1.8_ft, 70.0);
-    intk.spin(-50);
-    pros::delay(800);
-    intk.spin(0);
-    mcroStack(false);
-    pros::delay(800);
-    mcroReverse();
-    dvtn.ctrl.moveArcade(0.0, 0.0);
-    break;
-  case 3:
     // 6blue - stacks 5 cubes
     intk.spin(-200);
     lift.setTarget(100);
@@ -265,7 +271,6 @@ void autonomous() {
     intk.spin(-200);
     pros::delay(150);
     intk.spin(0);
-    mcroStackAuton();
     break;
   case 4:
     dvtn.ctrl.moveArcade(50.0, 0.0);
