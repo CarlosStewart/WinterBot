@@ -40,6 +40,10 @@ void intkControl(void *) {
     case state_intk::coast:
       intk.stop(false);
       break;
+    case state_intk::delayStart:
+      pros::delay(600);
+      intk.setState(state_intk::in);
+      break;
     }
     pros::delay(20);
   }
@@ -219,13 +223,12 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-  enum autons { blueSmall9, redSmall9, blueBig, redBig4, progSkills, oneCube };
-  autons auton = redBig4;
-  pros::Task intkTask(intkControl);
-  pros::Task trayTask(trayControl);
+  enum autons { blueSmall8, redSmall8, redBig4, redBig8, progSkills, oneCube };
+  autons auton = redBig8;
+  pros::Task intkTaskAuton(intkControl);
+  pros::Task trayTaskAuton(trayControl);
   switch (auton) {
-  case blueSmall9:
-    // 9Red - gets 9 cubes
+  case blueSmall8:
     deploy();
     intk.setState(state_intk::in);
     dvtn.ctrl.driveDistance(2.8_ft, 115.0);
@@ -244,7 +247,26 @@ void autonomous() {
     dvtn.ctrl.turnToFace(-127_deg, 15.0);
     { pros::Task stackTask(mcroStackAuton); }
     dvtn.ctrl.driveDistance(9_in, 35.0);
-    // dvtn.ctrl.driveDistance(-12_in, 200.0);
+    break;
+  case redSmall8:
+    deploy();
+    intk.setState(state_intk::in);
+    dvtn.ctrl.driveDistance(2.8_ft, 115.0);
+    dvtn.ctrl.turnToFace(-29_deg, 100.0);
+    dvtn_left_motors.moveVelocity(-200.0);
+    dvtn_right_motors.moveVelocity(-200.0);
+    pros::delay(500);
+    while (true) {
+      if (dvtn_left_motors.getActualVelocity() == 0)
+        break;
+    }
+    dvtn_left_motors.moveVelocity(0.0);
+    dvtn_right_motors.moveVelocity(0.0);
+    dvtn.ctrl.driveDistance(3.4_ft, 80.0);
+    dvtn.ctrl.driveDistance(-1.8_ft);
+    dvtn.ctrl.turnToFace(127_deg, 15.0);
+    { pros::Task stackTask(mcroStackAuton); }
+    dvtn.ctrl.driveDistance(9_in, 35.0);
     break;
   case redBig4:
     // 5Red - stacks 5 cubes
@@ -257,20 +279,14 @@ void autonomous() {
     dvtn.ctrl.driveDistance(12_in, 50.0);
     mcroStack(false);
     break;
-  case 2:
-    // 6blue - stacks 5 cubes
-    intk.spin(-200);
-    lift.setTarget(100);
-    lift.waitForController();
-    lift.setTarget(0);
-    lift.waitForController();
-    intk.spin(200);
-    dvtn.ctrl.driveDistance(3_ft, 65.0);
-    dvtn.ctrl.turnToFace(-150_deg, 40.0);
-    dvtn.ctrl.driveDistance(1.9_ft, 70.0);
-    intk.spin(-200);
-    pros::delay(150);
-    intk.spin(0);
+  case redBig8:
+    deploy();
+    intk.setState(state_intk::in);
+    intk.setState(state_intk::out);
+    pros::delay(50);
+    intk.setState(state_intk::delayStart);
+    dvtn.ctrl.driveDistance(3.3_ft, 200.0);
+    dvtn.ctrl.driveDistance(8_in, 30.0);
     break;
   case 4:
     dvtn.ctrl.moveArcade(50.0, 0.0);
@@ -341,6 +357,8 @@ void autonomous() {
     // stacks a bunch in the protected zone
     deploy();
     break;
+    intkTaskAuton.suspend();
+    trayTaskAuton.suspend();
   }
 }
 

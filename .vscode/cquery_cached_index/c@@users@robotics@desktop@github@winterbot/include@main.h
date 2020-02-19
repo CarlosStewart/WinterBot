@@ -57,7 +57,7 @@ using namespace okapi;
 
 // states
 enum class state_dvtn { plain, slew, off, idle };
-enum class state_intk { in, out, precise, hold, coast };
+enum class state_intk { in, out, precise, hold, coast, delayStart };
 enum class state_tray { moveUp, moveDown, lift, stack, hold, idle };
 enum class state_lift { hold, moveToTarget, brake, rest, idle };
 
