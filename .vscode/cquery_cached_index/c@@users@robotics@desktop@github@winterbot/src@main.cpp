@@ -223,8 +223,8 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-  enum autons { blueSmall8, redSmall8, redBig4, redBig8, progSkills, oneCube };
-  autons auton = redBig8;
+  enum autons { blueSmall8, redSmall8, redBig4, blueBig8, progSkills, oneCube };
+  autons auton = blueBig8;
   pros::Task intkTaskAuton(intkControl);
   pros::Task trayTaskAuton(trayControl);
   switch (auton) {
@@ -279,14 +279,22 @@ void autonomous() {
     dvtn.ctrl.driveDistance(12_in, 50.0);
     mcroStack(false);
     break;
-  case redBig8:
+  case blueBig8:
     deploy();
     intk.setState(state_intk::in);
+    dvtn.ctrl.driveDistance(3.5_ft, 200.0);
+    dvtn.ctrl.driveDistance(6_in, 100.0);
+    dvtn.ctrl.turnToFace(-12_deg, 50.0);
+    dvtn.ctrl.driveDistance(6_in, 150.0);
+    /*
     intk.setState(state_intk::out);
+
+    dvtn.ctrl.driveDistance(2_ft, 200.0);
+    dvtn.ctrl.driveDistanceSpecial(-2_ft, 200.0, -1_ft);
     pros::delay(50);
-    intk.setState(state_intk::delayStart);
     dvtn.ctrl.driveDistance(3.3_ft, 200.0);
     dvtn.ctrl.driveDistance(8_in, 30.0);
+    */
     break;
   case 4:
     dvtn.ctrl.moveArcade(50.0, 0.0);
