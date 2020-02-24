@@ -24,7 +24,7 @@ public:
   state_dvtn getState();
 
   class Control {
-    const double straightSuccessRange = 10.0; // degrees
+    const double straightSuccessRange = 5.0; // degrees
     const double straightMaxSpeed = 150.0;
     const double straightSlewIncrement = 10;
     const int straightSettledForCounts = 50;

@@ -20,8 +20,11 @@ Drivetrain::Drivetrain(double tSlewIncrement) {
 void Drivetrain::updateArcade(double tForwardVel, double tTurnVel,
                               bool tSlewOn) {
 
-  tForwardVel *= abs(pow(tForwardVel, 3)) / pow(200, 3);
-  tTurnVel *= abs(pow(tTurnVel, 3)) / pow(200, 3);
+  tForwardVel = adjustControl(tForwardVel, 2.0, 50.0, 200.0);
+  tTurnVel = adjustControl(tTurnVel, 2.0, 20.0, 200.0);
+
+  pros::lcd::print(5, "forward: %f", tForwardVel);
+  pros::lcd::print(6, "turn: %f", tTurnVel);
 
   if (tSlewOn) {
     // update target forward velocity
@@ -197,6 +200,129 @@ void Drivetrain::Control::driveDistance(QLength tDistance, double tMaxSpeed) {
 }
 void Drivetrain::Control::driveDistance(QLength tDistance) {
   driveDistance(tDistance, straightMaxSpeed, straightSlewIncrement);
+}
+
+void Drivetrain::Control::driveDistanceSpecial(QLength tDistance,
+                                               double tMaxSpeed,
+                                               QLength tTurnDistance) {
+  if (tTurnDistance.convert(inch) < 0) {
+    double kp = 0.46;
+    double ki = 0.0;
+    double kd = 1;
+    double integralActiveZone = 500.0;
+    double target = tDistance.convert(inch) * 360 / (TRACK_DIAMETER * pi) +
+                    dvtn_right_track.get();
+    double turnDistanceDegrees =
+        tTurnDistance.convert(inch) * -360 / (TRACK_DIAMETER * pi);
+    double error, lastError, totalError, proportion, integral, deriative,
+        totalSpeed, lastTotalSpeed;
+
+    do {
+      error = target - dvtn_right_track.get();
+
+      if (abs(error) < integralActiveZone && error != 0)
+        totalError += error;
+      else
+        totalError = 0;
+
+      if (totalError > 50 / ki)
+        totalError = 50 / ki;
+      else if (totalError < -50 / ki)
+        totalError = 50 / ki;
+
+      if (error == 0)
+        deriative = 0;
+
+      proportion = error * kp;
+      integral = totalError * ki;
+      deriative = (error - lastError) * kd;
+
+      lastError = error;
+
+      totalSpeed = proportion + integral + deriative;
+
+      if (tDistance > 0_in &&
+          totalSpeed > lastTotalSpeed + straightSlewIncrement)
+        totalSpeed = lastTotalSpeed + straightSlewIncrement;
+      else if (totalSpeed < lastTotalSpeed - straightSlewIncrement)
+        totalSpeed = lastTotalSpeed - straightSlewIncrement;
+
+      if (totalSpeed > tMaxSpeed)
+        totalSpeed = tMaxSpeed;
+      else if (totalSpeed < -tMaxSpeed)
+        totalSpeed = -tMaxSpeed;
+
+      lastTotalSpeed = totalSpeed;
+
+      if (abs(error) < turnDistanceDegrees) {
+        dvtn_left_motors.moveVelocity(0.0);
+        dvtn_right_motors.moveVelocity(totalSpeed);
+      } else {
+        moveArcade(totalSpeed, 0.0);
+      }
+
+      pros::delay(20);
+    } while (abs(error) > straightSuccessRange);
+  } else {
+    double kp = 0.46;
+    double ki = 0.0;
+    double kd = 1;
+    double integralActiveZone = 500.0;
+    double target = tDistance.convert(inch) * 360 / (TRACK_DIAMETER * pi) +
+                    dvtn_left_track.get();
+    double turnDistanceDegrees =
+        tTurnDistance.convert(inch) * 360 / (TRACK_DIAMETER * pi);
+    double error, lastError, totalError, proportion, integral, deriative,
+        totalSpeed, lastTotalSpeed;
+
+    do {
+      error = target - dvtn_left_track.get();
+
+      if (abs(error) < integralActiveZone && error != 0)
+        totalError += error;
+      else
+        totalError = 0;
+
+      if (totalError > 50 / ki)
+        totalError = 50 / ki;
+      else if (totalError < -50 / ki)
+        totalError = 50 / ki;
+
+      if (error == 0)
+        deriative = 0;
+
+      proportion = error * kp;
+      integral = totalError * ki;
+      deriative = (error - lastError) * kd;
+
+      lastError = error;
+
+      totalSpeed = proportion + integral + deriative;
+
+      if (tDistance > 0_in &&
+          totalSpeed > lastTotalSpeed + straightSlewIncrement)
+        totalSpeed = lastTotalSpeed + straightSlewIncrement;
+      else if (totalSpeed < lastTotalSpeed - straightSlewIncrement)
+        totalSpeed = lastTotalSpeed - straightSlewIncrement;
+
+      if (totalSpeed > tMaxSpeed)
+        totalSpeed = tMaxSpeed;
+      else if (totalSpeed < -tMaxSpeed)
+        totalSpeed = -tMaxSpeed;
+
+      lastTotalSpeed = totalSpeed;
+
+      if (abs(error) < turnDistanceDegrees) {
+        dvtn_left_motors.moveVelocity(totalSpeed);
+        dvtn_right_motors.moveVelocity(0.0);
+      } else {
+        moveArcade(totalSpeed, 0.0);
+      }
+
+      pros::delay(20);
+    } while (abs(error) > straightSuccessRange);
+  }
+  moveArcade(0.0, 0.0);
 }
 // creation of dt object
 Drivetrain dvtn(5.0);

@@ -115,9 +115,9 @@ void liftControl(void *) {
     } else if (btn_lift_tower_low.changedToPressed()) {
       lift.setTarget(heights_lift::lowTower);
       lift.setState(state_lift::moveToTarget);
-    } else if (btn_lift_tower_mid.changedToPressed()) {
-      lift.setTarget(heights_lift::midTower);
-      lift.setState(state_lift::moveToTarget);
+    // } else if (btn_lift_tower_mid.changedToPressed()) {
+    //   lift.setTarget(heights_lift::midTower);
+    //   lift.setState(state_lift::moveToTarget);
     } else if (btn_lift_up.changedToReleased() ||
                btn_lift_down.changedToReleased() ||
                btn_lift_tower_low.changedToReleased() ||
@@ -161,12 +161,16 @@ void liftControl(void *) {
 void mcroControl(void *) {
   ControllerButton btn_mcro_stack(BTN_MCRO_STACK);
   ControllerButton btn_mcro_reverse(BTN_MCRO_REVERSE);
+  ControllerButton btn_mcro_deploy(BTN_MCRO_DEPLOY);
+
 
   while (true) {
     if (btn_mcro_stack.changedToPressed()) {
       mcroStack(false);
     } else if (btn_mcro_reverse.changedToPressed()) {
       mcroStack(true);
+    } else if (btn_mcro_deploy.changedToPressed()){
+      deploy();
     }
 
     pros::delay(50);
@@ -297,11 +301,11 @@ void autonomous() {
     pros::delay(300);
     // turn to get first tower cube
     dvtn.ctrl.turnToFace(-19_deg);
-    dvtn.ctrl.driveDistance(2_in, 110);
+    dvtn.ctrl.driveDistance(3.5_in, 110);
     pros::delay(600);
     // turn to face the zone
     dvtn.ctrl.turnToFace(96_deg, 50.0);
-    dvtn.ctrl.driveDistance(41_in, 90.0);
+    dvtn.ctrl.driveDistance(43_in, 90.0);
 
     /*
     lift.setTarget(700);

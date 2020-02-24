@@ -23,6 +23,8 @@ public:
   // sets the target height of the controller
   void setTarget(heights_lift tHeight);
   void setTarget(double tHeight);
+  // sets the maxumum speed of the controller
+  void limitSpeedTo(double tVelocity);
   // returns the target height of the controller
   double getTarget();
   // returns the current location of the controller

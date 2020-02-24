@@ -84,3 +84,4 @@ extern Potentiometer line_follower;
 
 #define BTN_MCRO_STACK ControllerDigital::X
 #define BTN_MCRO_REVERSE ControllerDigital::B
+#define BTN_MCRO_DEPLOY ControllerDigital::right

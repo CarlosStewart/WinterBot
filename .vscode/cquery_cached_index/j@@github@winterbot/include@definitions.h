@@ -3,12 +3,14 @@
 
 // functions
 void deploy();
-void aLineSensor();
-void mcroStack();
-void mcroStackAuton();
+void mcroStack(bool ten);
+void mcroStackAuton(void *);
+void mcroStackAfterTime(void *);
 void mcroStackNoRev();
 void mcroReverse();
 void mcroGetRow();
+double adjustControl(double tInput, double tStrength, double tMin, double tMax);
+double adjustControl(double tInput, double tStrength);
 #define hfix(i)                                                                \
   fmod(i, 360) < 0 ? fmod(i, 360) + 360 : fmod(i, 360) == -0 ? 0 : fmod(i, 360)
 
@@ -82,3 +84,4 @@ extern Potentiometer line_follower;
 
 #define BTN_MCRO_STACK ControllerDigital::X
 #define BTN_MCRO_REVERSE ControllerDigital::B
+#define BTN_MCRO_DEPLOY ControllerDigital::right
