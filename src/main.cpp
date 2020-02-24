@@ -180,7 +180,8 @@ void mcroControl(void *) {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-  line_follower.get();
+  dvtn_left_motors.setBrakeMode(AbstractMotor::brakeMode::hold);
+  dvtn_right_motors.setBrakeMode(AbstractMotor::brakeMode::hold);
   tray.disable();
   pros::lcd::initialize();
   tray_motor.moveVelocity(-200);
@@ -190,7 +191,6 @@ void initialize() {
   tray.setBottom();
   tray.setTarget(heights_tray::rest);
   tray.enable();
-  intk.setLineVal(line_follower.get());
 }
 
 /**
@@ -227,21 +227,24 @@ void autonomous() {
   autons auton = blueBig8;
   pros::Task intkTaskAuton(intkControl);
   pros::Task trayTaskAuton(trayControl);
+  pros::Task liftTaskAuton(liftControl);
   switch (auton) {
   case blueSmall8:
     deploy();
     intk.setState(state_intk::in);
     dvtn.ctrl.driveDistance(2.8_ft, 115.0);
-    dvtn.ctrl.turnToFace(29_deg, 100.0);
-    dvtn_left_motors.moveVelocity(-200.0);
-    dvtn_right_motors.moveVelocity(-200.0);
-    pros::delay(500);
-    while (true) {
-      if (dvtn_left_motors.getActualVelocity() == 0)
-        break;
-    }
-    dvtn_left_motors.moveVelocity(0.0);
-    dvtn_right_motors.moveVelocity(0.0);
+    dvtn.ctrl.turnToFace(4_deg, 100.0);
+    dvtn.ctrl.driveDistance(-3_ft, 200.0);
+    dvtn.ctrl.turnToFace(0_deg, 30.0);
+    // dvtn_left_motors.moveVelocity(-200.0);
+    // dvtn_right_motors.moveVelocity(-200.0);
+    // pros::delay(500);
+    // while (true) {
+    //   if (dvtn_left_motors.getActualVelocity() == 0)
+    //     break;
+    // }
+    // dvtn_left_motors.moveVelocity(0.0);
+    // dvtn_right_motors.moveVelocity(0.0);
     dvtn.ctrl.driveDistance(3.4_ft, 80.0);
     dvtn.ctrl.driveDistance(-1.8_ft);
     dvtn.ctrl.turnToFace(-127_deg, 15.0);
@@ -280,13 +283,39 @@ void autonomous() {
     mcroStack(false);
     break;
   case blueBig8:
+    // start stacking
+    { pros::Task stackTask(mcroStackAfterTime); }
     deploy();
+    intk.setState(state_intk::out);
+    dvtn.ctrl.driveDistance(2.3_ft, 130.0);
+    dvtn.ctrl.turnToFace(-37_deg, 5.0);
+    intk.setSpeed(130.0);
+    intk.setState(state_intk::precise);
+    // get stack of 4
+    dvtn.ctrl.driveDistance(1.7_ft, 120.0);
     intk.setState(state_intk::in);
-    dvtn.ctrl.driveDistance(3.5_ft, 200.0);
-    dvtn.ctrl.driveDistance(6_in, 100.0);
-    dvtn.ctrl.turnToFace(-12_deg, 50.0);
-    dvtn.ctrl.driveDistance(6_in, 150.0);
+    pros::delay(300);
+    // turn to get first tower cube
+    dvtn.ctrl.turnToFace(-19_deg);
+    dvtn.ctrl.driveDistance(2_in, 110);
+    pros::delay(600);
+    // turn to face the zone
+    dvtn.ctrl.turnToFace(96_deg, 50.0);
+    dvtn.ctrl.driveDistance(41_in, 90.0);
+
     /*
+    lift.setTarget(700);
+    lift.setState(state_lift::moveToTarget);
+    intk.setState(state_intk::in);
+    dvtn.ctrl.driveDistance(2.1_ft, 150.0);
+    lift.limitSpeedTo(150.0);
+    lift.setTarget(heights_lift::bottom);
+    lift.setState(state_lift::moveToTarget);
+    dvtn.ctrl.driveDistance(1.5_ft, 200.0);
+    lift.limitSpeedTo(200.0);
+    dvtn.ctrl.driveDistance(6_in, 100.0);
+    dvtn.ctrl.turnToFace(-18_deg, 50.0);
+    dvtn.ctrl.driveDistance(6_in, 150.0);
     intk.setState(state_intk::out);
 
     dvtn.ctrl.driveDistance(2_ft, 200.0);
@@ -390,6 +419,8 @@ void opcontrol() {
   pros::Task mcroTask(mcroControl);
 
   ControllerButton btn_dt_tgl_slew(BTN_DVTN_TGL_SLEW);
+  dvtn_left_motors.setBrakeMode(AbstractMotor::brakeMode::coast);
+  dvtn_right_motors.setBrakeMode(AbstractMotor::brakeMode::coast);
   dvtn.setState(state_dvtn::plain);
   while (true) {
     if (btn_dt_tgl_slew.changedToPressed()) {

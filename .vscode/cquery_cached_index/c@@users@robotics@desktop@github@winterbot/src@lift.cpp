@@ -1,8 +1,7 @@
 #include "main.h"
 
 Motor lift_motor(LIFT);
-auto controllerLift =
-    AsyncControllerFactory::posPID(lift_motor, 0.01, 0.0, 0.0);
+auto controllerLift = AsyncControllerFactory::posIntegrated(lift_motor);
 
 // overload constructor
 Lift::Lift(bool tBrakeModeHold) {
@@ -35,6 +34,10 @@ void Lift::setTarget(heights_lift tHeight) {
   controllerLift.setTarget((double)tHeight);
 }
 void Lift::setTarget(double tHeight) { controllerLift.setTarget(tHeight); }
+// sets the maxumum speed of the controller
+void Lift::limitSpeedTo(double tVelocity) {
+  controllerLift.setMaxVelocity(tVelocity);
+}
 // returns the target height of the controller
 double Lift::getTarget() { return controllerLift.getTarget(); }
 // returns the current location of the controller

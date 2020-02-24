@@ -78,6 +78,32 @@ void mcroStackAuton(void *) {
   // turns off the intake
   intk.setState(state_intk::hold);
 }
+
+void mcroStackAfterTime(void *) {
+  pros::delay(10500);
+  tray.setState(state_tray::stack);
+  intk.setSpeed(-20.0);
+  intk.setState(state_intk::precise);
+
+  while (tray.getLocation() < (double)heights_tray::slowZone)
+    pros::delay(20);
+  intk.setState(state_intk::coast);
+  tray.pauseUntilSettled();
+  // pros::delay(500);
+  // spins the intake out
+  intk.setSpeed(-100.0);
+  intk.setState(state_intk::precise);
+  // backs up the drivetrain
+  pros::delay(400);
+  dvtn.setState(state_dvtn::idle);
+  dvtn.ctrl.moveArcade(-100.0, 0.0);
+  // continues backing up for a bit, then lowers the tray
+  pros::delay(500);
+  dvtn.setState(state_dvtn::plain);
+  tray.setState(state_tray::moveDown);
+  // turns off the intake
+  intk.setState(state_intk::hold);
+}
 /*
 void mcroStackNoRev() {
   tray.setTarget(heights_tray::vertical);
