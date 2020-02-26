@@ -290,22 +290,24 @@ void autonomous() {
     // start stacking
     { pros::Task stackTask(mcroStackAfterTime); }
     deploy();
+    tray.setTarget(heights_tray::lifted);
     intk.setState(state_intk::out);
     dvtn.ctrl.driveDistance(2.3_ft, 130.0);
     dvtn.ctrl.turnToFace(-37_deg, 5.0);
     intk.setSpeed(130.0);
     intk.setState(state_intk::precise);
     // get stack of 4
-    dvtn.ctrl.driveDistance(1.7_ft, 120.0);
+    dvtn.ctrl.driveDistance(1.7_ft, 130.0);
     intk.setState(state_intk::in);
     pros::delay(300);
+    tray.setTarget(heights_tray::rest);
     // turn to get first tower cube
-    dvtn.ctrl.turnToFace(-19_deg);
-    dvtn.ctrl.driveDistance(3.5_in, 110);
+    dvtn.ctrl.turnToFace(-17_deg);
+    dvtn.ctrl.driveDistance(3.8_in, 110);
     pros::delay(600);
     // turn to face the zone
-    dvtn.ctrl.turnToFace(96_deg, 50.0);
-    dvtn.ctrl.driveDistance(43_in, 90.0);
+    dvtn.ctrl.turnToFace(97_deg, 50.0);
+    dvtn.ctrl.driveDistance(43_in, 120.0);
 
     /*
     lift.setTarget(700);
