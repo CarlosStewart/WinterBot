@@ -115,9 +115,9 @@ void liftControl(void *) {
     } else if (btn_lift_tower_low.changedToPressed()) {
       lift.setTarget(heights_lift::lowTower);
       lift.setState(state_lift::moveToTarget);
-    // } else if (btn_lift_tower_mid.changedToPressed()) {
-    //   lift.setTarget(heights_lift::midTower);
-    //   lift.setState(state_lift::moveToTarget);
+      // } else if (btn_lift_tower_mid.changedToPressed()) {
+      //   lift.setTarget(heights_lift::midTower);
+      //   lift.setState(state_lift::moveToTarget);
     } else if (btn_lift_up.changedToReleased() ||
                btn_lift_down.changedToReleased() ||
                btn_lift_tower_low.changedToReleased() ||
@@ -163,13 +163,12 @@ void mcroControl(void *) {
   ControllerButton btn_mcro_reverse(BTN_MCRO_REVERSE);
   ControllerButton btn_mcro_deploy(BTN_MCRO_DEPLOY);
 
-
   while (true) {
     if (btn_mcro_stack.changedToPressed()) {
       mcroStack(false);
     } else if (btn_mcro_reverse.changedToPressed()) {
       mcroStack(true);
-    } else if (btn_mcro_deploy.changedToPressed()){
+    } else if (btn_mcro_deploy.changedToPressed()) {
       deploy();
     }
 
@@ -184,6 +183,7 @@ void mcroControl(void *) {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
+  imu.reset();
   dvtn_left_motors.setBrakeMode(AbstractMotor::brakeMode::hold);
   dvtn_right_motors.setBrakeMode(AbstractMotor::brakeMode::hold);
   tray.disable();
@@ -293,7 +293,7 @@ void autonomous() {
     tray.setTarget(heights_tray::lifted);
     intk.setState(state_intk::out);
     dvtn.ctrl.driveDistance(2.3_ft, 130.0);
-    dvtn.ctrl.turnToFace(-37_deg, 5.0);
+    dvtn.ctrl.turnToFace(-39_deg, 5.0);
     intk.setSpeed(130.0);
     intk.setState(state_intk::precise);
     // get stack of 4
@@ -302,12 +302,14 @@ void autonomous() {
     pros::delay(300);
     tray.setTarget(heights_tray::rest);
     // turn to get first tower cube
-    dvtn.ctrl.turnToFace(-17_deg);
-    dvtn.ctrl.driveDistance(3.8_in, 110);
+    dvtn.ctrl.turnToFace(-10_deg);
+    dvtn.ctrl.driveDistance(9_in, 110);
     pros::delay(600);
     // turn to face the zone
-    dvtn.ctrl.turnToFace(97_deg, 50.0);
-    dvtn.ctrl.driveDistance(43_in, 120.0);
+    intk.setState(state_intk::hold);
+    dvtn.ctrl.turnToFace(85_deg, 40.0);
+    intk.setState(state_intk::in);
+    dvtn.ctrl.driveDistance(36_in, 120.0);
 
     /*
     lift.setTarget(700);
@@ -436,7 +438,8 @@ void opcontrol() {
         dvtn.setState(state_dvtn::plain);
     }
 
-    pros::lcd::print(1, "line_follower val: %f", line_follower.get());
+    pros::lcd::print(1, "dvtn distance: %f",
+                     dvtn_right_front_motor.getPosition() / 360 * 4.19 * pi);
 
     switch (dvtn.getState()) {
     case state_dvtn::plain:

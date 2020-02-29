@@ -8,6 +8,7 @@ MotorGroup dvtn_left_motors({dvtn_left_front_motor, dvtn_left_back_motor});
 MotorGroup dvtn_right_motors({dvtn_right_front_motor, dvtn_right_back_motor});
 ADIEncoder dvtn_left_track(DLT_TOP, DLT_BOTTOM, DLT_REV);
 ADIEncoder dvtn_right_track(DRT_TOP, DRT_BOTTOM, DRT_REV);
+pros::Imu imu(IMU);
 
 // overload constructor
 Drivetrain::Drivetrain(double tSlewIncrement) {
@@ -67,8 +68,9 @@ state_dvtn Drivetrain::getState() { return state; }
 
 // returns the current heading of the robot in degrees
 double Drivetrain::Control::getHeading() {
-  return 1.393015905679 * (dvtn_left_track.get() - dvtn_right_track.get()) /
-         (LEFT_TRACK_DIST + RIGHT_TRACK_DIST);
+  return imu.get_rotation();
+  // 1.393015905679 * (dvtn_left_track.get() - dvtn_right_track.get()) /
+  //        (LEFT_TRACK_DIST + RIGHT_TRACK_DIST);
 }
 
 // basic movement methods

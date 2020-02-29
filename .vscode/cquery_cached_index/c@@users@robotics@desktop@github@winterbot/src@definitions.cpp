@@ -82,7 +82,7 @@ void mcroStackAuton(void *) {
 void mcroStackAfterTime(void *) {
   pros::delay(10500);
   tray.setState(state_tray::stack);
-  intk.setSpeed(-20.0);
+  intk.setSpeed(-30.0);
   intk.setState(state_intk::precise);
 
   while (tray.getLocation() < (double)heights_tray::slowZone)

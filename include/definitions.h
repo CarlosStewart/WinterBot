@@ -36,6 +36,9 @@ extern ADIEncoder dvtn_right_track;
 #define LEFT_TRACK_DIST 2.56
 #define RIGHT_TRACK_DIST 2.56
 #define TRACK_DIAMETER 2.859824
+#define WHEEL_DIAMETER 4.19
+const int IMU = 20;
+extern pros::Imu imu;
 
 const int IL = 16;
 const int IR = -9;
