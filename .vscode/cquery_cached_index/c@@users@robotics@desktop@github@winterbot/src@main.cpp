@@ -83,7 +83,7 @@ void trayControl(void *) {
     case state_tray::stack:
       tray.setTarget((double)heights_tray::vertical + 50);
       if (tray.isInSlowZone())
-        tray.limitSpeedTo(100);
+        tray.limitSpeedTo(60);
       break;
     case state_tray::hold:
       tray.setTarget(tray.getLocation());

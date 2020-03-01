@@ -11,8 +11,11 @@ void deploy() {
 void mcroStack(bool ten) {
   tray.setState(state_tray::stack);
   if (!ten) {
-    intk.setSpeed(-20.0);
+    intk.setSpeed(-30.0);
     intk.setState(state_intk::precise);
+  } else {
+    pros::delay(1000);
+    intk.setState(state_intk::coast);
   }
   while (tray.getLocation() < (double)heights_tray::slowZone)
     pros::delay(20);
