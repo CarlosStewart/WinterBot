@@ -8,6 +8,16 @@ void deploy() {
   lift.setTarget(0);
 }
 
+void skillsDeploy() {
+  lift.setTarget(200);
+  lift.setState(state_lift::moveToTarget);
+  pros::delay(200);
+  intk.setState(state_intk::out);
+  pros::delay(400);
+  lift.setTarget(0);
+  lift.setState(state_lift::moveToTarget);
+}
+
 void mcroStack(bool ten) {
   tray.setState(state_tray::stack);
   if (!ten) {
@@ -83,7 +93,7 @@ void mcroStackAuton(void *) {
 }
 
 void mcroStackAfterTime(void *) {
-  pros::delay(10500);
+  pros::delay(9500);
   tray.setState(state_tray::stack);
   intk.setSpeed(-30.0);
   intk.setState(state_intk::precise);

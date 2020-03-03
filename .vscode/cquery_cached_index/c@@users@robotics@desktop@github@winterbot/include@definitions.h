@@ -3,6 +3,7 @@
 
 // functions
 void deploy();
+void skillsDeploy();
 void mcroStack(bool ten);
 void mcroStackAuton(void *);
 void mcroStackAfterTime(void *);
