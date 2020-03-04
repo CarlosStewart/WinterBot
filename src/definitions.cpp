@@ -31,6 +31,7 @@ void mcroStack(bool ten) {
     pros::delay(20);
   intk.setState(state_intk::coast);
   tray.pauseUntilSettled();
+  tray.setState(state_tray::moveDown);
   // pros::delay(500);
   // spins the intake out
   intk.setSpeed(-100.0);
