@@ -115,9 +115,9 @@ void liftControl(void *) {
     } else if (btn_lift_tower_low.changedToPressed()) {
       lift.setTarget(heights_lift::lowTower);
       lift.setState(state_lift::moveToTarget);
-    // } else if (btn_lift_tower_mid.changedToPressed()) {
-    //   lift.setTarget(heights_lift::midTower);
-    //   lift.setState(state_lift::moveToTarget);
+      // } else if (btn_lift_tower_mid.changedToPressed()) {
+      //   lift.setTarget(heights_lift::midTower);
+      //   lift.setState(state_lift::moveToTarget);
     } else if (btn_lift_up.changedToReleased() ||
                btn_lift_down.changedToReleased() ||
                btn_lift_tower_low.changedToReleased() ||
@@ -163,14 +163,13 @@ void mcroControl(void *) {
   ControllerButton btn_mcro_reverse(BTN_MCRO_REVERSE);
   ControllerButton btn_mcro_deploy(BTN_MCRO_DEPLOY);
 
-
   while (true) {
     if (btn_mcro_stack.changedToPressed()) {
       mcroStack(false);
     } else if (btn_mcro_reverse.changedToPressed()) {
       mcroStack(true);
-    } else if (btn_mcro_deploy.changedToPressed()){
-      deploy();
+    } else if (btn_mcro_deploy.changedToPressed()) {
+      skillsDeploy();
     }
 
     pros::delay(50);
@@ -184,6 +183,7 @@ void mcroControl(void *) {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
+  imu.reset();
   dvtn_left_motors.setBrakeMode(AbstractMotor::brakeMode::hold);
   dvtn_right_motors.setBrakeMode(AbstractMotor::brakeMode::hold);
   tray.disable();
@@ -227,33 +227,48 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-  enum autons { blueSmall8, redSmall8, redBig4, blueBig8, progSkills, oneCube };
-  autons auton = blueBig8;
+  enum autons {
+    blueSmall8,
+    redSmall8,
+    redBig4,
+    blueBig8,
+    progSkills,
+    oneCube,
+    redBig8,
+  };
+  autons auton = blueSmall8;
   pros::Task intkTaskAuton(intkControl);
   pros::Task trayTaskAuton(trayControl);
   pros::Task liftTaskAuton(liftControl);
   switch (auton) {
-  case blueSmall8:
-    deploy();
+  case blueSmall8: {
+    pros::Task stackTask(mcroStackAfterTime);
+  }
+    liftTaskAuton.remove();
+    trayTaskAuton.suspend();
+    // deploy
+    lift.enable();
+    tray.enable();
+    lift.setTarget(800);
+    tray.setTarget(heights_tray::forward);
+    lift.waitForController();
+    lift.setTarget(heights_lift::bottom);
+    tray.setTarget(heights_tray::rest);
+    lift.waitForController();
     intk.setState(state_intk::in);
-    dvtn.ctrl.driveDistance(2.8_ft, 115.0);
-    dvtn.ctrl.turnToFace(4_deg, 100.0);
-    dvtn.ctrl.driveDistance(-3_ft, 200.0);
-    dvtn.ctrl.turnToFace(0_deg, 30.0);
-    // dvtn_left_motors.moveVelocity(-200.0);
-    // dvtn_right_motors.moveVelocity(-200.0);
-    // pros::delay(500);
-    // while (true) {
-    //   if (dvtn_left_motors.getActualVelocity() == 0)
-    //     break;
-    // }
-    // dvtn_left_motors.moveVelocity(0.0);
-    // dvtn_right_motors.moveVelocity(0.0);
-    dvtn.ctrl.driveDistance(3.4_ft, 80.0);
-    dvtn.ctrl.driveDistance(-1.8_ft);
-    dvtn.ctrl.turnToFace(-127_deg, 15.0);
-    { pros::Task stackTask(mcroStackAuton); }
-    dvtn.ctrl.driveDistance(9_in, 35.0);
+    // gets the first two cubes
+    dvtn.ctrl.driveDistance(2.2_ft, 160.0);
+    trayTaskAuton.resume();
+    // turns and backs up
+    dvtn.ctrl.turnToFace(48_deg, 100.0);
+    dvtn.ctrl.driveDistance(-2.6_ft, 200.0);
+    // straightens out and drives forwards
+    dvtn.ctrl.turnToFace(2_deg, 100.0);
+    dvtn.ctrl.driveDistance(2.7_ft, 85.0);
+    // turn to the zone
+    dvtn.ctrl.turnToFace(-154_deg, 5.0);
+    //{ pros::Task stackTask(mcroStackAuton); }
+    dvtn.ctrl.driveDistance(2.1_ft, 140.0);
     break;
   case redSmall8:
     deploy();
@@ -277,23 +292,42 @@ void autonomous() {
     break;
   case redBig4:
     // 5Red - stacks 5 cubes
-    deploy();
+
+    { pros::Task stackTask(mcroStackAfterTime); }
+    pros::delay(500);
+    intk.setState(state_intk::out);
+    pros::delay(2000);
     intk.setState(state_intk::in);
-    dvtn.ctrl.driveDistance(19_in, 50.0);
-    dvtn.ctrl.turnToFace(-100_deg, 30.0);
-    dvtn.ctrl.driveDistance(20_in, 50.0);
-    dvtn.ctrl.turnToFace(-160_deg, 30.0);
-    dvtn.ctrl.driveDistance(12_in, 50.0);
-    mcroStack(false);
+    dvtn.ctrl.driveDistance(2.5_ft, 170.0);
+    dvtn.ctrl.turnToFace(-30_deg, 50.0);
+    dvtn.ctrl.driveDistance(8_in, 100.0);
+    dvtn.ctrl.turnToFace(147_deg, 40.0);
+    dvtn.ctrl.driveDistance(1.5_ft, 80.0);
+    dvtn.ctrl.turnToFace(170_deg, 70.0);
+    dvtn.ctrl.driveDistance(14_in, 60.0);
+
+    // pros::delay(500);
+    // intk.setState(state_intk::out);
+    // pros::delay(1000);
+    // intk.setState(state_intk::in);
+    // dvtn.ctrl.driveDistance(2.5_ft, 70.0);
+    // dvtn.ctrl.turnToFace(30_deg, 40.0);
+    // dvtn.ctrl.driveDistance(9_in, 40.0);
+    // dvtn.ctrl.turnToFace(-147_deg, 40.0);
+    // dvtn.ctrl.driveDistance(1.7_ft, 70.0);
+    // dvtn.ctrl.turnToFace(-170_deg, 40.0);
+    // dvtn.ctrl.driveDistance(9_in, 40.0);
+    // { pros::Task stackTask(mcroStackAuton); }
+
     break;
   case blueBig8:
     // start stacking
     { pros::Task stackTask(mcroStackAfterTime); }
-    deploy();
-    tray.setTarget(heights_tray::lifted);
+    pros::delay(500);
     intk.setState(state_intk::out);
+    tray.setTarget(heights_tray::lifted);
     dvtn.ctrl.driveDistance(2.3_ft, 130.0);
-    dvtn.ctrl.turnToFace(-37_deg, 5.0);
+    dvtn.ctrl.turnToFace(-39_deg, 5.0);
     intk.setSpeed(130.0);
     intk.setState(state_intk::precise);
     // get stack of 4
@@ -302,12 +336,14 @@ void autonomous() {
     pros::delay(300);
     tray.setTarget(heights_tray::rest);
     // turn to get first tower cube
-    dvtn.ctrl.turnToFace(-17_deg);
-    dvtn.ctrl.driveDistance(3.8_in, 110);
+    dvtn.ctrl.turnToFace(-10_deg);
+    dvtn.ctrl.driveDistance(9_in, 110);
     pros::delay(600);
     // turn to face the zone
-    dvtn.ctrl.turnToFace(97_deg, 50.0);
-    dvtn.ctrl.driveDistance(43_in, 120.0);
+    intk.setState(state_intk::hold);
+    dvtn.ctrl.turnToFace(85_deg, 40.0);
+    intk.setState(state_intk::in);
+    dvtn.ctrl.driveDistance(36_in, 120.0);
 
     /*
     lift.setTarget(700);
@@ -315,7 +351,7 @@ void autonomous() {
     intk.setState(state_intk::in);
     dvtn.ctrl.driveDistance(2.1_ft, 150.0);
     lift.limitSpeedTo(150.0);
-    lift.setTarget(heights_lift::bottom);
+    lift.setTarget(heights_lift::bottom);;
     lift.setState(state_lift::moveToTarget);
     dvtn.ctrl.driveDistance(1.5_ft, 200.0);
     lift.limitSpeedTo(200.0);
@@ -331,6 +367,31 @@ void autonomous() {
     dvtn.ctrl.driveDistance(8_in, 30.0);
     */
     break;
+  case redBig8:
+    // start stacking
+    { pros::Task stackTask(mcroStackAfterTime); }
+    pros::delay(500);
+    intk.setState(state_intk::out);
+    tray.setTarget(heights_tray::lifted);
+    dvtn.ctrl.driveDistance(2.3_ft, 130.0);
+    dvtn.ctrl.turnToFace(39_deg, 5.0);
+    intk.setSpeed(130.0);
+    intk.setState(state_intk::precise);
+    // get stack of 4
+    dvtn.ctrl.driveDistance(1.7_ft, 130.0);
+    intk.setState(state_intk::in);
+    pros::delay(300);
+    tray.setTarget(heights_tray::rest);
+    // turn to get first tower cube
+    dvtn.ctrl.turnToFace(10_deg);
+    dvtn.ctrl.driveDistance(9_in, 110);
+    pros::delay(600);
+    // turn to face the zone
+    intk.setState(state_intk::hold);
+    dvtn.ctrl.turnToFace(-85_deg, 40.0);
+    intk.setState(state_intk::in);
+    dvtn.ctrl.driveDistance(36_in, 120.0);
+    break;
   case 4:
     dvtn.ctrl.moveArcade(50.0, 0.0);
     pros::delay(2000);
@@ -338,68 +399,19 @@ void autonomous() {
     pros::delay(3000);
     dvtn.ctrl.moveArcade(0.0, 0.0);
     break;
-  case 5:
-    // prgramming
-    intk.spin(-200);
-    lift.setTarget(100);
-    lift.waitForController();
-    lift.setTarget(0);
-    lift.waitForController();
-    intk.spin(200);
-    dvtn.ctrl.driveDistance(3_ft, 65.0);
-    dvtn.ctrl.driveDistance(-2.2_ft, 80.0);
-    dvtn.ctrl.turnToFace(75_deg, 50.0);
-    dvtn.ctrl.driveDistance(-2.4_ft, 50.0);
-    dvtn.ctrl.turnToFace(0_deg, 30.0);
-    dvtn.ctrl.driveDistance(3_ft, 45.0);
-    dvtn.ctrl.turnToFace(-160_deg, 40.0);
-    dvtn.ctrl.driveDistance(1.9_ft, 40.0);
-    dvtn.ctrl.turnToFace(-140_deg, 30.0);
-    dvtn.ctrl.driveDistance(5_in, 50.0);
-    intk.spin(125.0);
-    pros::delay(200);
-    intk.spin(0);
-    mcroStackNoRev();
-    dvtn.ctrl.driveDistance(-3.2_ft, 50.0);
-    dvtn.ctrl.turnToFace(0_deg, 50.0);
-    tray.setTarget(heights_tray::bottom);
-    intk.spin(200);
-    dvtn.ctrl.driveDistance(2.5_ft, 50.0);
-    pros::delay(2000);
-    intk.spin(-200);
-    pros::delay(150);
-    intk.spin(0);
-    dvtn.ctrl.driveDistance(-6_in, 50.0);
-    lift.setTarget(heights_lift::lowTower);
-    intk.spin(-200);
-    pros::delay(2000);
-    dvtn.ctrl.driveDistance(-3.2_ft, 50.0);
-    dvtn.ctrl.turnToFace(90_deg, 50.0);
-    dvtn.ctrl.driveDistance(2.8_ft, 50.0);
-    pros::delay(2000);
-    intk.spin(-200);
-    pros::delay(150);
-    intk.spin(0);
-    dvtn.ctrl.driveDistance(-6_in, 50.0);
-    lift.setTarget(heights_lift::midTower);
-    dvtn.ctrl.driveDistance(1_in, 50.0);
-    intk.spin(-200);
-    pros::delay(2000);
-    break;
-  case 6:
-    lift.enable();
-    intk.spin(-200);
-    lift.setTarget(100);
-    lift.waitForController();
-    lift.setTarget(0);
-    lift.waitForController();
-    intk.spin(200);
-    dvtn.ctrl.driveDistance(3_ft, 65.0);
-    dvtn.ctrl.driveDistance(-2.2_ft, 80.0);
-  case 7:
+
+  case oneCube:
     // stacks a bunch in the protected zone
-    deploy();
+    dvtn.ctrl.moveArcade(50.0, 0.0);
+    pros::delay(3000);
+    dvtn.ctrl.moveArcade(-50.0, 0.0);
+    pros::delay(3000);
+    dvtn.ctrl.moveArcade(0.0, 0.0);
+    intk.setState(state_intk::out);
+    pros::delay(1000);
+    intk.setState(state_intk::hold);
     break;
+    liftTaskAuton.suspend();
     intkTaskAuton.suspend();
     trayTaskAuton.suspend();
   }
@@ -436,7 +448,8 @@ void opcontrol() {
         dvtn.setState(state_dvtn::plain);
     }
 
-    pros::lcd::print(1, "line_follower val: %f", line_follower.get());
+    pros::lcd::print(1, "dvtn distance: %f",
+                     dvtn_right_front_motor.getPosition() / 360 * 4.19 * pi);
 
     switch (dvtn.getState()) {
     case state_dvtn::plain:

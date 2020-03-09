@@ -25,6 +25,8 @@ void Tray::setTarget(double tHeight) {
 }
 // returns the target height of the tray
 double Tray::getTarget() { return controllerTray.getTarget(); }
+// returns the error of the controller
+double Tray::getError() { return controllerTray.getError(); }
 // returns the current location of the controller
 double Tray::getLocation() {
   return controllerTray.getTarget() - controllerTray.getError();
@@ -40,9 +42,7 @@ void Tray::limitSpeedTo(double tMaxSpeed) {
 // returns whether or not the controller has settled
 bool Tray::controllerSettled() { return controllerTray.isSettled(); }
 // returns the error of the controller
-double Tray::controllerGetError(){
-  return controllerTray.getError();
-}
+double Tray::controllerGetError() { return controllerTray.getError(); }
 // stops the thread until the controller has settled
 void Tray::pauseUntilSettled() { controllerTray.waitUntilSettled(); }
 

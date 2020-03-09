@@ -22,6 +22,8 @@ public:
   void setTarget(double tHeight);
   // returns the target height of the tray
   double getTarget();
+  // returns the error of the controller
+  double getError();
   // returns the current location of the controller
   double getLocation();
   // returns whether or not the tray should be going slow

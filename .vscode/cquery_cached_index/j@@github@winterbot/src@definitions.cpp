@@ -1,23 +1,38 @@
 #include "main.h"
 
 void deploy() {
+  lift.setTarget(heights_lift::raisedThreshold);
+  lift.setState(state_lift::moveToTarget);
+  lift.waitForController();
+  lift.setTarget(heights_lift::bottom);
+  lift.setState(state_lift::moveToTarget);
+  lift.waitForController();
+}
+
+void skillsDeploy() {
   lift.setTarget(200);
+  lift.setState(state_lift::moveToTarget);
   pros::delay(200);
-  intk.spinOut();
+  intk.setState(state_intk::out);
   pros::delay(400);
   lift.setTarget(0);
+  lift.setState(state_lift::moveToTarget);
 }
 
 void mcroStack(bool ten) {
   tray.setState(state_tray::stack);
   if (!ten) {
-    intk.setSpeed(-20.0);
+    intk.setSpeed(-30.0);
     intk.setState(state_intk::precise);
+  } else {
+    pros::delay(1000);
+    intk.setState(state_intk::coast);
   }
   while (tray.getLocation() < (double)heights_tray::slowZone)
     pros::delay(20);
   intk.setState(state_intk::coast);
   tray.pauseUntilSettled();
+  tray.setState(state_tray::moveDown);
   // pros::delay(500);
   // spins the intake out
   intk.setSpeed(-100.0);

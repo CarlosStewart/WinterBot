@@ -250,7 +250,8 @@ void autonomous() {
     lift.enable();
     tray.enable();
     lift.setTarget(800);
-    tray.setTarget(heights_tray::forward);
+    pros::delay(500);
+    tray.setTarget(heights_tray::lifted);
     lift.waitForController();
     lift.setTarget(heights_lift::bottom);
     tray.setTarget(heights_tray::rest);
