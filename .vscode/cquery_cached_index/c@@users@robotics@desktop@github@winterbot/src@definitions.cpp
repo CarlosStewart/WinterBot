@@ -1,11 +1,12 @@
 #include "main.h"
 
 void deploy() {
-  lift.setTarget(200);
-  pros::delay(200);
-  intk.spinOut();
-  pros::delay(400);
-  lift.setTarget(0);
+  lift.setTarget(heights_lift::raisedThreshold);
+  lift.setState(state_lift::moveToTarget);
+  lift.waitForController();
+  lift.setTarget(heights_lift::bottom);
+  lift.setState(state_lift::moveToTarget);
+  lift.waitForController();
 }
 
 void skillsDeploy() {
@@ -94,7 +95,7 @@ void mcroStackAuton(void *) {
 }
 
 void mcroStackAfterTime(void *) {
-  pros::delay(9500);
+  pros::delay(10500);
   tray.setState(state_tray::stack);
   intk.setSpeed(-30.0);
   intk.setState(state_intk::precise);

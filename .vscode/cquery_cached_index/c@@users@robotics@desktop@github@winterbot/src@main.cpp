@@ -236,32 +236,39 @@ void autonomous() {
     oneCube,
     redBig8,
   };
-  autons auton = oneCube;
+  autons auton = blueSmall8;
   pros::Task intkTaskAuton(intkControl);
   pros::Task trayTaskAuton(trayControl);
   pros::Task liftTaskAuton(liftControl);
   switch (auton) {
-  case blueSmall8:
-    deploy();
+  case blueSmall8: {
+    pros::Task stackTask(mcroStackAfterTime);
+  }
+    liftTaskAuton.remove();
+    trayTaskAuton.suspend();
+    // deploy
+    lift.enable();
+    tray.enable();
+    lift.setTarget(800);
+    tray.setTarget(heights_tray::forward);
+    lift.waitForController();
+    lift.setTarget(heights_lift::bottom);
+    tray.setTarget(heights_tray::rest);
+    lift.waitForController();
     intk.setState(state_intk::in);
-    dvtn.ctrl.driveDistance(2.8_ft, 115.0);
-    dvtn.ctrl.turnToFace(4_deg, 100.0);
-    dvtn.ctrl.driveDistance(-3_ft, 200.0);
-    dvtn.ctrl.turnToFace(0_deg, 30.0);
-    // dvtn_left_motors.moveVelocity(-200.0);
-    // dvtn_right_motors.moveVelocity(-200.0);
-    // pros::delay(500);
-    // while (true) {
-    //   if (dvtn_left_motors.getActualVelocity() == 0)
-    //     break;
-    // }
-    // dvtn_left_motors.moveVelocity(0.0);
-    // dvtn_right_motors.moveVelocity(0.0);
-    dvtn.ctrl.driveDistance(3.4_ft, 80.0);
-    dvtn.ctrl.driveDistance(-1.8_ft);
-    dvtn.ctrl.turnToFace(-127_deg, 15.0);
-    { pros::Task stackTask(mcroStackAuton); }
-    dvtn.ctrl.driveDistance(9_in, 35.0);
+    // gets the first two cubes
+    dvtn.ctrl.driveDistance(2.2_ft, 160.0);
+    trayTaskAuton.resume();
+    // turns and backs up
+    dvtn.ctrl.turnToFace(48_deg, 100.0);
+    dvtn.ctrl.driveDistance(-2.6_ft, 200.0);
+    // straightens out and drives forwards
+    dvtn.ctrl.turnToFace(2_deg, 100.0);
+    dvtn.ctrl.driveDistance(2.7_ft, 85.0);
+    // turn to the zone
+    dvtn.ctrl.turnToFace(-154_deg, 5.0);
+    //{ pros::Task stackTask(mcroStackAuton); }
+    dvtn.ctrl.driveDistance(2.1_ft, 140.0);
     break;
   case redSmall8:
     deploy();
@@ -404,6 +411,7 @@ void autonomous() {
     pros::delay(1000);
     intk.setState(state_intk::hold);
     break;
+    liftTaskAuton.suspend();
     intkTaskAuton.suspend();
     trayTaskAuton.suspend();
   }
