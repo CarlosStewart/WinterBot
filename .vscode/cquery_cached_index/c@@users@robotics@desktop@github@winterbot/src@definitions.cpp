@@ -33,10 +33,12 @@ void mcroStack(bool ten) {
   intk.setState(state_intk::coast);
   tray.pauseUntilSettled();
   tray.setState(state_tray::moveDown);
-  // pros::delay(500);
-  // spins the intake out
   intk.setSpeed(-100.0);
   intk.setState(state_intk::precise);
+  pros::delay(400);
+  intk.setState(state_intk::coast);
+  // pros::delay(500);
+  // spins the intake out
   // backs up the drivetrain
   pros::delay(400);
   dvtn.setState(state_dvtn::idle);

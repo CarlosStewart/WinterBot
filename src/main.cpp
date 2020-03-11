@@ -235,8 +235,9 @@ void autonomous() {
     progSkills,
     oneCube,
     redBig8,
+    blueBig4
   };
-  autons auton = blueSmall8;
+  autons auton = blueBig4;
   pros::Task intkTaskAuton(intkControl);
   pros::Task trayTaskAuton(trayControl);
   pros::Task liftTaskAuton(liftControl);
@@ -270,6 +271,34 @@ void autonomous() {
     dvtn.ctrl.turnToFace(-154_deg, 5.0);
     //{ pros::Task stackTask(mcroStackAuton); }
     dvtn.ctrl.driveDistance(2.1_ft, 140.0);
+    break;
+  case blueBig4:
+    liftTaskAuton.remove();
+    trayTaskAuton.suspend();
+    // deploy
+    lift.enable();
+    tray.enable();
+    lift.setTarget(800);
+    pros::delay(500);
+    tray.setTarget(heights_tray::lifted);
+    lift.waitForController();
+    lift.setTarget(heights_lift::bottom);
+    tray.setTarget(heights_tray::rest);
+    lift.waitForController();
+    intk.setState(state_intk::in);
+    dvtn.ctrl.driveDistance(2.4_ft, 170.0);
+    dvtn.ctrl.turnToFace(-35_deg, 50.0);
+    dvtn.ctrl.driveDistance(8_in, 100.0);
+    dvtn.ctrl.turnToFace(138_deg, 80.0);
+    dvtn.ctrl.driveDistance(2.2_ft, 100.0);
+    trayTaskAuton.resume();
+    dvtn.ctrl.turnToFace(170_deg, 70.0);
+    intk.setState(state_intk::out);
+    pros::delay(200);
+    { pros::Task stackTask(mcroStackAuton); }
+    dvtn.ctrl.driveDistance(5_in, 60.0);
+    pros::delay(4000);
+    dvtn.ctrl.moveArcade(0.0, 0.0);
     break;
   case redSmall8:
     deploy();
@@ -392,13 +421,6 @@ void autonomous() {
     dvtn.ctrl.turnToFace(-85_deg, 40.0);
     intk.setState(state_intk::in);
     dvtn.ctrl.driveDistance(36_in, 120.0);
-    break;
-  case 4:
-    dvtn.ctrl.moveArcade(50.0, 0.0);
-    pros::delay(2000);
-    dvtn.ctrl.moveArcade(-50.0, 0.0);
-    pros::delay(3000);
-    dvtn.ctrl.moveArcade(0.0, 0.0);
     break;
 
   case oneCube:
