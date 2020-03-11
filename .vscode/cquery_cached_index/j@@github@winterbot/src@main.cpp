@@ -67,7 +67,7 @@ void trayControl(void *) {
     switch (tray.getState()) {
     case state_tray::moveUp:
       tray.limitSpeedTo(200.0);
-      tray.setTarget(heights_tray::forward);
+      tray.setTarget(heights_tray::vertical);
       tray.setState(state_tray::idle);
       break;
     case state_tray::moveDown:
@@ -161,15 +161,15 @@ void liftControl(void *) {
 void mcroControl(void *) {
   ControllerButton btn_mcro_stack(BTN_MCRO_STACK);
   ControllerButton btn_mcro_reverse(BTN_MCRO_REVERSE);
-  ControllerButton btn_mcro_deploy(BTN_MCRO_DEPLOY);
+  ControllerButton btn_mcro_stack_toss(BTN_MCRO_STACK_TOSS);
 
   while (true) {
     if (btn_mcro_stack.changedToPressed()) {
       mcroStack(false);
     } else if (btn_mcro_reverse.changedToPressed()) {
       mcroStack(true);
-    } else if (btn_mcro_deploy.changedToPressed()) {
-      skillsDeploy();
+    } else if (btn_mcro_stack_toss.changedToPressed()) {
+      mcroStackToss(true);
     }
 
     pros::delay(50);
@@ -235,8 +235,9 @@ void autonomous() {
     progSkills,
     oneCube,
     redBig8,
+    blueBig4
   };
-  autons auton = blueSmall8;
+  autons auton = blueBig4;
   pros::Task intkTaskAuton(intkControl);
   pros::Task trayTaskAuton(trayControl);
   pros::Task liftTaskAuton(liftControl);
@@ -250,7 +251,8 @@ void autonomous() {
     lift.enable();
     tray.enable();
     lift.setTarget(800);
-    tray.setTarget(heights_tray::forward);
+    pros::delay(500);
+    tray.setTarget(heights_tray::lifted);
     lift.waitForController();
     lift.setTarget(heights_lift::bottom);
     tray.setTarget(heights_tray::rest);
@@ -264,11 +266,39 @@ void autonomous() {
     dvtn.ctrl.driveDistance(-2.6_ft, 200.0);
     // straightens out and drives forwards
     dvtn.ctrl.turnToFace(2_deg, 100.0);
-    dvtn.ctrl.driveDistance(2.7_ft, 85.0);
+    dvtn.ctrl.driveDistance(2.7_ft, 87.0);
     // turn to the zone
-    dvtn.ctrl.turnToFace(-154_deg, 5.0);
+    dvtn.ctrl.turnToFace(-156_deg, 5.0);
     //{ pros::Task stackTask(mcroStackAuton); }
     dvtn.ctrl.driveDistance(2.1_ft, 140.0);
+    break;
+  case blueBig4:
+    liftTaskAuton.remove();
+    trayTaskAuton.suspend();
+    // deploy
+    lift.enable();
+    tray.enable();
+    lift.setTarget(800);
+    pros::delay(500);
+    tray.setTarget(heights_tray::lifted);
+    lift.waitForController();
+    lift.setTarget(heights_lift::bottom);
+    tray.setTarget(heights_tray::rest);
+    lift.waitForController();
+    intk.setState(state_intk::in);
+    dvtn.ctrl.driveDistance(2.4_ft, 170.0);
+    dvtn.ctrl.turnToFace(-35_deg, 50.0);
+    dvtn.ctrl.driveDistance(8_in, 100.0);
+    dvtn.ctrl.turnToFace(138_deg, 80.0);
+    dvtn.ctrl.driveDistance(2.2_ft, 100.0);
+    trayTaskAuton.resume();
+    dvtn.ctrl.turnToFace(170_deg, 70.0);
+    intk.setState(state_intk::out);
+    pros::delay(200);
+    { pros::Task stackTask(mcroStackAuton); }
+    dvtn.ctrl.driveDistance(5_in, 60.0);
+    pros::delay(3500);
+    dvtn.ctrl.moveArcade(0.0, 0.0);
     break;
   case redSmall8:
     deploy();
@@ -391,13 +421,6 @@ void autonomous() {
     dvtn.ctrl.turnToFace(-85_deg, 40.0);
     intk.setState(state_intk::in);
     dvtn.ctrl.driveDistance(36_in, 120.0);
-    break;
-  case 4:
-    dvtn.ctrl.moveArcade(50.0, 0.0);
-    pros::delay(2000);
-    dvtn.ctrl.moveArcade(-50.0, 0.0);
-    pros::delay(3000);
-    dvtn.ctrl.moveArcade(0.0, 0.0);
     break;
 
   case oneCube:

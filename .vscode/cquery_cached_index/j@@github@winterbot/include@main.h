@@ -76,7 +76,7 @@ enum class heights_tray {
   rest = 300,
   lifted = 840,
   slowZone = 2000,
-  vertical = 2760,
+  vertical = 2800,
   forward = 2950
 };
 

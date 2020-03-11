@@ -277,8 +277,8 @@
         "upload_options": {
             "compress_bin": true,
             "description": "Created with PROS",
-            "remote_name": "oneCube",
-            "slot": 3
+            "remote_name": "blueBig4",
+            "slot": 2
         }
     }
 }
